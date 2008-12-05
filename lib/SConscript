@@ -1,0 +1,8 @@
+# -*- python -*-
+Import('env')
+import os
+
+env.SharedLibrary('sdqa',
+                         map(lambda str: "../src/" + str,
+                            ["SdqaRating.cc"
+                            ]))
