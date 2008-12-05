@@ -1,0 +1,16 @@
+# -*- python -*-
+Import("env")
+
+env.CheckSwig("python", ilang="c++",includedProducts="utils pex_exceptions")
+
+env.Program(["SdqaRating_1.cc"], LIBS=env.getlibs("utils pex_exceptions sdqa"))
+
+#
+# Tests
+#
+import lsst.tests
+import os
+
+tests = lsst.tests.Control(env, verbose=True)
+
+tests.run("SdqaRating_1.cc")
