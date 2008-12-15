@@ -11,12 +11,13 @@ env = scons.makeEnv("sdqa",
                      ["boost", "boost/regex.hpp", "boost_regex:C++"],
                      ["utils", "lsst/utils/Utils.h", "utils:C++"],
                      ["pex_exceptions", "lsst/pex/exceptions/Exception.h", "pex_exceptions:C++"],
+                     ["python", "Python.h"], # needed for Swig
                     ])
 
 #
 # Build/install things
 #
-for d in Split("lib doc tests"):
+for d in Split("lib python/lsst/sdqa doc tests"):
     SConscript(os.path.join(d, "SConscript"))
 
 env['IgnoreFiles'] = r"(~$|\.pyc$|^\.svn$|\.o$)"
