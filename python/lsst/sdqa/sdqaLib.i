@@ -16,8 +16,6 @@ Access to the classes from the sdqa library
 
 %lsst_exceptions()
 
-%import "lsst/pex/exceptions/exceptionsLib.i"
-
 %include "lsst/sdqa/SdqaRating.h"
 
 
