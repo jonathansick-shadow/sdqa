@@ -1,16 +1,20 @@
 # -*- python -*-
 Import("env")
+import glob
 
-env.CheckSwig("python", ilang="c++",includedProducts="utils pex_exceptions")
-
-env.Program(["SdqaRating_1.cc"], LIBS=env.getlibs("utils pex_exceptions sdqa"))
+env.Program(glob.glob("*.cc"), LIBS=env.getlibs(env["eups_product"]))
 
 #
 # Tests
 #
 import lsst.tests
-import os
 
-tests = lsst.tests.Control(env, verbose=True)
+tests = lsst.tests.Control(env, verbose = True)
+tests.run("*.cc")
 
-tests.run("SdqaRating_1.cc")
+# This one seems a bit harder to make generic.
+for target in tests.run("*.py"):
+     env.Depends(target,
+        "../python/lsst/sdqa/_sdqaLib%s" % (env['LDMODULESUFFIX']))
+
+
