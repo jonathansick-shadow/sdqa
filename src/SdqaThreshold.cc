@@ -63,7 +63,7 @@ SdqaThreshold::~SdqaThreshold() {
 
 
 /**
- * Set class attributes, and raise exception for invalid dataType.
+ * Set class attributes.
  *
  * \param sdqaThresholdId is the sdqa_Threshold database table ID.
  * \param sdqaMetricId is the associated sdqa_Metric database table ID.
