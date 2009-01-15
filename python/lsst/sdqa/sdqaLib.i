@@ -10,6 +10,9 @@ Access to the classes from the sdqa library
 
 %{
 #include "lsst/sdqa/SdqaRating.h"
+#include "lsst/sdqa/SdqaMetric.h"
+#include "lsst/sdqa/SdqaThreshold.h"
+#include "lsst/sdqa/SdqaImageStatus.h"
 %}
 
 %include "lsst/p_lsstSwig.i"
@@ -17,6 +20,9 @@ Access to the classes from the sdqa library
 %lsst_exceptions()
 
 %include "lsst/sdqa/SdqaRating.h"
+%include "lsst/sdqa/SdqaMetric.h"
+%include "lsst/sdqa/SdqaThreshold.h"
+%include "lsst/sdqa/SdqaImageStatus.h"
 
 
 
