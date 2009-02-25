@@ -9,7 +9,8 @@ dependencies = ["python", "utils", "pex_exceptions"]
 
 env = scons.makeEnv("sdqa",
                     r"$HeadURL: svn+ssh://svn.lsstcorp.org/DMS/sdqa/trunk/SConstruct $",
-                     [["boost", "boost/shared_ptr.hpp"],
+                    [["boost", "boost/shared_ptr.hpp"],
+                     ["boost", "boost/regex.hpp", "boost_regex:C++"],
                      ["utils", "lsst/utils/Utils.h", "utils:C++"],
                      ["pex_exceptions", "lsst/pex/exceptions/Exception.h", "pex_exceptions:C++"],
                      ["python", "Python.h"], # needed for Swig
