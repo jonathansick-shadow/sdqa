@@ -19,7 +19,7 @@ using std::string;
 #include "lsst/sdqa/SdqaMetric.h"
 #include "lsst/pex/exceptions.h"
 
-using namespace lsst::sdqa;
+namespace sdqa = lsst::sdqa;
 
 #define BOOST_TEST_MODULE SdqaMetric_1
 #include "boost/test/included/unit_test.hpp"
@@ -35,14 +35,14 @@ BOOST_AUTO_TEST_CASE(test1) {
     int i1 = 1234;
     string n1 = "img.stat.mean";
     string p1 = "MJy/sr";
-    SdqaMetric::DataType t1 = SdqaMetric::FLOAT;
+    sdqa::SdqaMetric::DataType t1 = sdqa::SdqaMetric::FLOAT;
     string d1 = "Mean of good pixel values";
-    SdqaMetric sm1;
+    sdqa::SdqaMetric sm1;
     sm1.set(i1, n1, p1, t1, d1);
     int ri1 = sm1.getId();
     string rn1 = sm1.getName();
     string rp1 = sm1.getPhysicalUnits();
-    SdqaMetric::DataType rt1 = sm1.getDataType();
+    sdqa::SdqaMetric::DataType rt1 = sm1.getDataType();
     string rd1 = sm1.getDefinition();
 
     BOOST_CHECK_EQUAL(i1, ri1);
@@ -53,20 +53,19 @@ BOOST_AUTO_TEST_CASE(test1) {
 }
 
 BOOST_AUTO_TEST_CASE(test2) {
-    SdqaMetric s;
+    sdqa::SdqaMetric s;
     BOOST_CHECK_THROW(s.set(4321,
                             string("img.stat.stdDev"), 
                             string("MJy/sr"), 
-			    SdqaMetric::INVALID,
+			    sdqa::SdqaMetric::INVALID,
                             string("Standard deviation of good pixels")), 
 		      lsst::pex::exceptions::InvalidParameterException);
-    BOOST_CHECK_THROW(new SdqaMetric(567, 
+    BOOST_CHECK_THROW(new sdqa::SdqaMetric(567, 
                                      string("img.stat.badCalibPixN"), 
                                      string("counts"), 
-				     SdqaMetric::INVALID, 
+				     sdqa::SdqaMetric::INVALID, 
 		                     string("Number of bad pixels")),
 		      lsst::pex::exceptions::InvalidParameterException);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
-

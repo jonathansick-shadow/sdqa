@@ -18,7 +18,7 @@ using std::string;
 
 #include "lsst/sdqa/SdqaThreshold.h"
 
-using namespace lsst::sdqa;
+namespace sdqa = lsst::sdqa;
 
 #define BOOST_TEST_MODULE SdqaThreshold_1
 #include "boost/test/included/unit_test.hpp"
@@ -36,7 +36,7 @@ BOOST_AUTO_TEST_CASE(test1) {
     double u1 = 1.234;
     double l1 = 5.678;
     string c1 = "2008-12-11 10:22:29.601242";
-    SdqaThreshold st1(i1, j1, u1, l1, c1);
+    sdqa::SdqaThreshold st1(i1, j1, u1, l1, c1);
     int ri1 = st1.getThresholdId();
     int rj1 = st1.getMetricId();
     double ru1 = st1.getUpperThreshold();
@@ -56,7 +56,7 @@ BOOST_AUTO_TEST_CASE(test2) {
     double u2 = 5.555;
     double l2 = 7.777;
     string c2 = "2009-12-11 10:22:29.601242";
-    SdqaThreshold st2;
+    sdqa::SdqaThreshold st2;
     st2.set(i2, j2, u2, l2, c2);
     int ri2 = st2.getThresholdId();
     int rj2 = st2.getMetricId();
@@ -72,4 +72,3 @@ BOOST_AUTO_TEST_CASE(test2) {
 }
 
 BOOST_AUTO_TEST_SUITE_END()
-

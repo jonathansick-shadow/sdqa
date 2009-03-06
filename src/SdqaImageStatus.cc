@@ -15,7 +15,7 @@
 
 #include "lsst/sdqa/SdqaImageStatus.h"
 
-using namespace lsst::sdqa;
+namespace sdqa = lsst::sdqa;
 
 
 /**
@@ -26,7 +26,7 @@ using namespace lsst::sdqa;
  * attributes.
  */
 
-SdqaImageStatus::SdqaImageStatus() : _sdqaImageStatusId(0), 
+sdqa::SdqaImageStatus::SdqaImageStatus() : _sdqaImageStatusId(0), 
                                      _name(""),  
                                      _definition("") {}  
 
@@ -39,7 +39,7 @@ SdqaImageStatus::SdqaImageStatus() : _sdqaImageStatusId(0),
  * \param definition gives a description of the SDQA image status.
  */
 
-SdqaImageStatus::SdqaImageStatus(int         sdqaImageStatusId, 
+sdqa::SdqaImageStatus::SdqaImageStatus(int         sdqaImageStatusId, 
                                  std::string name,
                                  std::string definition) : 
     _sdqaImageStatusId(sdqaImageStatusId), 
@@ -47,7 +47,7 @@ SdqaImageStatus::SdqaImageStatus(int         sdqaImageStatusId,
     _definition(definition) {}  
 
 
-SdqaImageStatus::~SdqaImageStatus() {
+sdqa::SdqaImageStatus::~SdqaImageStatus() {
 }
 
 
@@ -59,7 +59,7 @@ SdqaImageStatus::~SdqaImageStatus() {
  * \param definition gives a description of the SDQA image status.
  */
 
-void SdqaImageStatus::set(int         sdqaImageStatusId, 
+void sdqa::SdqaImageStatus::set(int         sdqaImageStatusId, 
                           std::string name,
                           std::string definition) {
         _sdqaImageStatusId  = sdqaImageStatusId;
@@ -68,17 +68,14 @@ void SdqaImageStatus::set(int         sdqaImageStatusId,
 }
 
 
-int SdqaImageStatus::getImageStatusId() const {
+int sdqa::SdqaImageStatus::getImageStatusId() const {
     return _sdqaImageStatusId;
 }
 
-std::string SdqaImageStatus::getName() const {
+std::string sdqa::SdqaImageStatus::getName() const {
     return _name;
 }
 
-std::string SdqaImageStatus::getDefinition() const {
+std::string sdqa::SdqaImageStatus::getDefinition() const {
     return _definition;
 }
-
-
-

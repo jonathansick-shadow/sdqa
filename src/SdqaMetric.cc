@@ -19,7 +19,7 @@
 #include "lsst/sdqa/SdqaMetric.h"
 #include "lsst/pex/exceptions.h"
 
-using namespace lsst::sdqa;
+namespace sdqa = lsst::sdqa;
 
 
 /**
@@ -31,7 +31,7 @@ using namespace lsst::sdqa;
  * Valid _dataType values are 0=FLOAT and 1=INT.
  */
 
-SdqaMetric::SdqaMetric() : _dataType(INVALID) {}
+sdqa::SdqaMetric::SdqaMetric() : _dataType(INVALID) {}
 
 
 /**
@@ -45,7 +45,7 @@ SdqaMetric::SdqaMetric() : _dataType(INVALID) {}
  *
  */
 
-SdqaMetric::SdqaMetric(int         sdqaMetricId, 
+sdqa::SdqaMetric::SdqaMetric(int         sdqaMetricId, 
                        std::string metricName, 
                        std::string physicalUnits, 
                        DataType    dataType,
@@ -57,7 +57,7 @@ SdqaMetric::SdqaMetric(int         sdqaMetricId,
         definition);
 }
 
-SdqaMetric::~SdqaMetric() {
+sdqa::SdqaMetric::~SdqaMetric() {
 }
 
 
@@ -73,7 +73,7 @@ SdqaMetric::~SdqaMetric() {
  * \throws Exception if dataType is an invalid value (not 0 or 1).
  */
 
-void SdqaMetric::set(int         sdqaMetricId, 
+void sdqa::SdqaMetric::set(int         sdqaMetricId, 
                      std::string metricName, 
                      std::string physicalUnits, 
                      DataType    dataType,
@@ -92,24 +92,22 @@ void SdqaMetric::set(int         sdqaMetricId,
 }
 
 
-int SdqaMetric::getId() const {
+int sdqa::SdqaMetric::getId() const {
     return _sdqaMetricId;
 }
 
-std::string SdqaMetric::getName() const {
+std::string sdqa::SdqaMetric::getName() const {
     return _metricName;
 }
 
-std::string SdqaMetric::getPhysicalUnits() const {
+std::string sdqa::SdqaMetric::getPhysicalUnits() const {
     return _physicalUnits;
 }
 
-SdqaMetric::DataType SdqaMetric::getDataType() const {
+sdqa::SdqaMetric::DataType sdqa::SdqaMetric::getDataType() const {
     return _dataType;
 }
 
-std::string SdqaMetric::getDefinition() const {
+std::string sdqa::SdqaMetric::getDefinition() const {
     return _definition;
 }
-
-

@@ -22,8 +22,7 @@
 #include "lsst/sdqa/SdqaRating.h"
 #include "lsst/pex/exceptions.h"
 
-using namespace lsst::sdqa;
-
+namespace sdqa = lsst::sdqa;
 
 /**
  * Basic constructor.
@@ -34,7 +33,7 @@ using namespace lsst::sdqa;
  * Valid _ratingScope values are 0=Amp, 1=CCD, 2=FPA.
  */
 
-SdqaRating::SdqaRating() : _ratingScope(INVALID) {}
+sdqa::SdqaRating::SdqaRating() : _ratingScope(INVALID) {}
 
 
 /**
@@ -48,12 +47,12 @@ SdqaRating::SdqaRating() : _ratingScope(INVALID) {}
  *
  */
 
-SdqaRating::SdqaRating(std::string metricName, double metricValue, 
+sdqa::SdqaRating::SdqaRating(std::string metricName, double metricValue, 
 		       double metricErr, RatingScope ratingScope) {
     set(metricName, metricValue, metricErr, ratingScope);
 }
 
-SdqaRating::~SdqaRating() {
+sdqa::SdqaRating::~SdqaRating() {
 }
 
 
@@ -69,7 +68,7 @@ SdqaRating::~SdqaRating() {
  * \throws Exception if ratingScope is an invalid value (not 0, 1, or 2).
  */
 
-void SdqaRating::set(std::string metricName, double metricValue, 
+void sdqa::SdqaRating::set(std::string metricName, double metricValue, 
 		     double metricErr, RatingScope ratingScope) {
     if (! ((ratingScope == AMP) || 
            (ratingScope == CCD) ||
@@ -85,22 +84,21 @@ void SdqaRating::set(std::string metricName, double metricValue,
 }
 
 
-std::string SdqaRating::getName() const {
+std::string sdqa::SdqaRating::getName() const {
     return _metricName;
 }
 
 
-double SdqaRating::getValue() const {
+double sdqa::SdqaRating::getValue() const {
     return _metricValue;
 }
 
 
-double SdqaRating::getErr() const {
+double sdqa::SdqaRating::getErr() const {
     return _metricErr;
 }
 
 
-SdqaRating::RatingScope SdqaRating::getRatingScope() const {
+sdqa::SdqaRating::RatingScope sdqa::SdqaRating::getRatingScope() const {
     return _ratingScope;
 }
-

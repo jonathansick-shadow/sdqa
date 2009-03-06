@@ -18,7 +18,7 @@ using std::string;
 
 #include "lsst/sdqa/SdqaImageStatus.h"
 
-using namespace lsst::sdqa;
+namespace sdqa = lsst::sdqa;
 
 #define BOOST_TEST_MODULE SdqaImageStatus_1
 #include "boost/test/included/unit_test.hpp"
@@ -34,7 +34,7 @@ BOOST_AUTO_TEST_CASE(test1) {
     int i1 = 1234;
     string n1 = "marginallyPassedAuto";
     string d1 = "Image marginally passed by automated SDQA.";
-    SdqaImageStatus st1(i1, n1, d1);
+    sdqa::SdqaImageStatus st1(i1, n1, d1);
     int ri1 = st1.getImageStatusId();
     string rn1 = st1.getName();
     string rd1 = st1.getDefinition();
@@ -48,7 +48,7 @@ BOOST_AUTO_TEST_CASE(test2) {
     int i2 = 32767;
     string n2 = "marginallyFailedManual";
     string d2 = "Image marginally failed by manual SDQA.";
-    SdqaImageStatus sis;
+    sdqa::SdqaImageStatus sis;
     sis.set(i2, n2, d2);
     int ri2 = sis.getImageStatusId();
     string rn2 = sis.getName();
@@ -60,4 +60,3 @@ BOOST_AUTO_TEST_CASE(test2) {
 }
 
 BOOST_AUTO_TEST_SUITE_END()
-

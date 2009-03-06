@@ -15,7 +15,7 @@
 
 #include "lsst/sdqa/SdqaThreshold.h"
 
-using namespace lsst::sdqa;
+namespace sdqa = lsst::sdqa;
 
 
 /**
@@ -26,7 +26,7 @@ using namespace lsst::sdqa;
  * attributes.
  */
 
-SdqaThreshold::SdqaThreshold() : _sdqaThresholdId(0), 
+sdqa::SdqaThreshold::SdqaThreshold() : _sdqaThresholdId(0), 
                                  _sdqaMetricId(0),  
                                  _upperThreshold(0.0), 
                                  _lowerThreshold(0.0),  
@@ -46,7 +46,7 @@ SdqaThreshold::SdqaThreshold() : _sdqaThresholdId(0),
  * in the corresponding database record is null.
  */
 
-SdqaThreshold::SdqaThreshold(int         sdqaThresholdId, 
+sdqa::SdqaThreshold::SdqaThreshold(int         sdqaThresholdId, 
                              int         sdqaMetricId,
                              double      upperThreshold,
                              double      lowerThreshold,
@@ -58,7 +58,7 @@ SdqaThreshold::SdqaThreshold(int         sdqaThresholdId,
     _createdDate(createdDate) {}  
 
 
-SdqaThreshold::~SdqaThreshold() {
+sdqa::SdqaThreshold::~SdqaThreshold() {
 }
 
 
@@ -75,7 +75,7 @@ SdqaThreshold::~SdqaThreshold() {
  * in the corresponding database record is null.
  */
 
-void SdqaThreshold::set(int         sdqaThresholdId, 
+void sdqa::SdqaThreshold::set(int         sdqaThresholdId, 
                         int         sdqaMetricId,
                         double      upperThreshold,
                         double      lowerThreshold,
@@ -88,25 +88,22 @@ void SdqaThreshold::set(int         sdqaThresholdId,
 }
 
 
-int SdqaThreshold::getThresholdId() const {
+int sdqa::SdqaThreshold::getThresholdId() const {
     return _sdqaThresholdId;
 }
 
-int SdqaThreshold::getMetricId() const {
+int sdqa::SdqaThreshold::getMetricId() const {
     return _sdqaMetricId;
 }
 
-double SdqaThreshold::getUpperThreshold() const {
+double sdqa::SdqaThreshold::getUpperThreshold() const {
     return _upperThreshold;
 }
 
-double SdqaThreshold::getLowerThreshold() const {
+double sdqa::SdqaThreshold::getLowerThreshold() const {
     return _lowerThreshold;
 }
 
-std::string SdqaThreshold::getCreatedDate() const {
+std::string sdqa::SdqaThreshold::getCreatedDate() const {
     return _createdDate;
 }
-
-
-

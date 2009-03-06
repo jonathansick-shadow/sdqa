@@ -23,6 +23,9 @@
 #define LSST_SDQARATING_H
 
 #include <string>
+#include <vector>
+
+#include "boost/shared_ptr.hpp"
 
 namespace lsst {
 
@@ -37,6 +40,8 @@ class SdqaRating {
 
 
 public:
+    typedef boost::shared_ptr<SdqaRating> Ptr;
+
     enum RatingScope {INVALID = -1, AMP, CCD, FPA};
 
     SdqaRating();
@@ -62,9 +67,10 @@ private:
     RatingScope  _ratingScope;    // 0=Amp, 1=CCD, 2=FPA (see enum RatingScope).
 };
 
+typedef std::vector<SdqaRating::Ptr> SdqaRatingSet;
+
     } // namespace sdqa
 
 } // namespace lsst
 
 #endif // LSST_SDQARATING_H
-
