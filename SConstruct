@@ -5,7 +5,7 @@
 import glob, os.path, re, os
 import lsst.SConsUtils as scons
 
-dependencies = ["python", "utils", "pex_exceptions"]
+dependencies = ["python", "utils", "pex_exceptions", "daf_base"]
 
 env = scons.makeEnv("sdqa",
                     r"$HeadURL: svn+ssh://svn.lsstcorp.org/DMS/sdqa/trunk/SConstruct $",
@@ -13,6 +13,7 @@ env = scons.makeEnv("sdqa",
                      ["boost", "boost/regex.hpp", "boost_regex:C++"],
                      ["utils", "lsst/utils/Utils.h", "utils:C++"],
                      ["pex_exceptions", "lsst/pex/exceptions/Exception.h", "pex_exceptions:C++"],
+                     ["daf_base", "lsst/daf/base.h", "daf_base:C++"],
                      ["python", "Python.h"], # needed for Swig
                     ])
 

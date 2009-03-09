@@ -24,8 +24,13 @@
 
 namespace sdqa = lsst::sdqa;
 
+
+/*******************
+ * SdqaRating class.
+ */
+
 /**
- * Basic constructor.
+ * Basic constructor for SdqaRating class.
  *
  * Initializes class attribute _ratingScope to -1, an invalid value.
  * The set function must be subsequently called to set the class
@@ -37,7 +42,16 @@ sdqa::SdqaRating::SdqaRating() : _ratingScope(INVALID) {}
 
 
 /**
- *  Constructor to explicitly initialize class attributes.
+ * Copy constructor for SdqaRating class.
+ */
+
+sdqa::SdqaRating::SdqaRating(SdqaRating const & other) {
+    set(other._metricName, other._metricValue, other._metricErr, other._ratingScope);
+}
+
+
+/**
+ *  Constructor for SdqaRating class to explicitly initialize class attributes.
  *
  * \param metricName is the name of the SDQA metric.
  * \param metricValue is the value of the SDQA metric.
@@ -52,12 +66,20 @@ sdqa::SdqaRating::SdqaRating(std::string metricName, double metricValue,
     set(metricName, metricValue, metricErr, ratingScope);
 }
 
-sdqa::SdqaRating::~SdqaRating() {
-}
+
+/**
+ *  Destructor for SdqaRating class.
+ */
+
+sdqa::SdqaRating::~SdqaRating() {}
 
 
 /**
- * Set class attributes, and raise exception for invalid ratingScope.
+ *  Member functions for SdqaRating class.
+ */
+
+/**
+ * Set SdqaRating class attributes, and raise exception for invalid ratingScope.
  *
  * \param metricName is the name of the SDQA metric.
  * \param metricValue is the value of the SDQA metric.
@@ -84,21 +106,145 @@ void sdqa::SdqaRating::set(std::string metricName, double metricValue,
 }
 
 
+/**
+ * Get SdqaRating class attributes.
+ */
+
 std::string sdqa::SdqaRating::getName() const {
     return _metricName;
 }
-
 
 double sdqa::SdqaRating::getValue() const {
     return _metricValue;
 }
 
-
 double sdqa::SdqaRating::getErr() const {
     return _metricErr;
 }
 
-
 sdqa::SdqaRating::RatingScope sdqa::SdqaRating::getRatingScope() const {
     return _ratingScope;
 }
+
+
+/**
+ * Overloaded assignment operator for SdqaRating class.
+ */
+
+sdqa::SdqaRating & sdqa::SdqaRating::operator = (sdqa::SdqaRating const & other) {
+    if (&other != this) {
+            set(other._metricName, 
+		other._metricValue, 
+		other._metricErr, 
+		other._ratingScope);
+    }
+    return *this;
+}
+
+
+/**
+ * Overloaded equality operator for SdqaRating class.
+ */
+
+bool sdqa::SdqaRating::operator == (sdqa::SdqaRating const & other) const {
+    if (_metricName != other._metricName) {
+        return false;
+    } else if (_metricValue != other._metricValue) {
+        return false;
+    } else if (_metricErr != other._metricErr) {
+        return false;
+    } else if (_ratingScope != other._ratingScope) {
+        return false;
+    } 
+    return true;
+}
+
+
+/**
+ * Private serialize function for SdqaRating class.
+ */
+
+template <typename Archive> 
+void sdqa::SdqaRating::serialize(Archive & ar, unsigned int const version) {
+    ar & _metricValue;
+    ar & _metricErr;
+}
+
+
+
+/************************************
+ * PersistableSdqaRatingVector class.
+ */
+
+/**
+ * Basic constructor for PersistableSdqaRatingVector class.
+ */
+
+sdqa::PersistableSdqaRatingVector::PersistableSdqaRatingVector() {}
+
+
+/**
+ *  Constructor for PersistableSdqaRatingVector class to explicitly initialize 
+ *  class attributes.
+ */
+
+sdqa::PersistableSdqaRatingVector::PersistableSdqaRatingVector(
+    sdqa::SdqaRatingSet const & sdqaRatings) : _sdqaRatings(sdqaRatings) {}
+
+
+/**
+ * Destructor for PersistableSdqaRatingVector class.
+ */
+
+sdqa::PersistableSdqaRatingVector::~PersistableSdqaRatingVector() { 
+    _sdqaRatings.clear(); 
+}
+
+
+/**
+ *  Member functions for PersistableSdqaRatingVector class.
+ */
+
+/**
+ * Set PersistableSdqaRatingVector class attributes.
+ */
+
+void sdqa::PersistableSdqaRatingVector::setSdqaRatings(
+    SdqaRatingSet const & sdqaRatings) {
+        _sdqaRatings = sdqaRatings; 
+}
+
+  
+/**
+ * Get PersistableSdqaRatingVector class attributes.
+ */
+
+sdqa::SdqaRatingSet sdqa::PersistableSdqaRatingVector::getSdqaRatings() const { 
+    return _sdqaRatings; 
+}
+
+
+/**
+ * Overloaded equality operators for PersistableSdqaRatingVector class.
+ */
+
+bool sdqa::PersistableSdqaRatingVector::operator ==
+    (sdqa::SdqaRatingSet const & other) const {
+    if (_sdqaRatings.size() != other.size())
+        return false;
+
+    sdqa::SdqaRatingSet::size_type i;
+    for (i = 0; i < _sdqaRatings.size(); ++i) {
+        if (*_sdqaRatings[i] != *other[i])
+            return false;
+    }
+
+    return true;
+}
+
+bool sdqa::PersistableSdqaRatingVector::operator == 
+    (sdqa::PersistableSdqaRatingVector const & other) 
+    const {
+    return other == _sdqaRatings;
+}
+

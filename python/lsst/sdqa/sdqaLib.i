@@ -9,6 +9,8 @@ Access to the classes from the sdqa library
 %module(package="lsst.sdqa", docstring=sdqa_DOCSTRING) sdqaLib
 
 %{
+#include "lsst/daf/base.h"
+#include "lsst/daf/base/Persistable.h"
 #include "lsst/sdqa/SdqaRating.h"
 #include "lsst/sdqa/SdqaMetric.h"
 #include "lsst/sdqa/SdqaThreshold.h"
@@ -20,10 +22,21 @@ Access to the classes from the sdqa library
 %lsst_exceptions()
 
 SWIG_SHARED_PTR(SdqaRating, lsst::sdqa::SdqaRating);
+SWIG_SHARED_PTR_DERIVED(PersistableSdqaRatingVector, 
+    lsst::daf::base::Persistable,
+    lsst::sdqa::PersistableSdqaRatingVector);
 
+%include "lsst/daf/base/persistenceMacros.i"
+
+%include "lsst/daf/base.h"
+%include "lsst/daf/base/Persistable.h"
 %include "lsst/sdqa/SdqaRating.h"
 %include "lsst/sdqa/SdqaMetric.h"
 %include "lsst/sdqa/SdqaThreshold.h"
 %include "lsst/sdqa/SdqaImageStatus.h"
 
 %template(SdqaRatingSet) std::vector<lsst::sdqa::SdqaRating::Ptr>;
+
+%lsst_persistable(lsst::sdqa::PersistableSdqaRatingVector);
+
+
