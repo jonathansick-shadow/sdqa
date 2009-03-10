@@ -7,6 +7,7 @@ Access to the classes from the sdqa library
 
 %feature("autodoc", "1");
 %module(package="lsst.sdqa", docstring=sdqa_DOCSTRING) sdqaLib
+#pragma SWIG nowarn=362                 // operator=  ignored
 
 %{
 #include "lsst/daf/base.h"
