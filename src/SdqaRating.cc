@@ -5,7 +5,7 @@
  *
  * \ingroup sdqa
  *
- * \brief Source file for class SdqaRating.  
+ * \brief Implementation file for SdqaRating class.  
  *
  *        SdqaRating provides a container for an SDQA rating, which consists
  *        of a metricName, metricValue, metricErr, and a database-table flag.
@@ -38,7 +38,7 @@ namespace sdqa = lsst::sdqa;
  * Valid _ratingScope values are 0=Amp, 1=CCD, 2=FPA.
  */
 
-sdqa::SdqaRating::SdqaRating() : _ratingScope(INVALID) {}
+sdqa::SdqaRating::SdqaRating() : _ratingScope(INVALID), _parentDbId(0) {}
 
 
 /**
@@ -94,7 +94,8 @@ void sdqa::SdqaRating::set(std::string metricName, double metricValue,
 		     double metricErr, RatingScope ratingScope) {
     if (! ((ratingScope == AMP) || 
            (ratingScope == CCD) ||
-           (ratingScope == FPA))) {
+           (ratingScope == FPA) ||
+           (ratingScope == FOOTPRINT))) {
         throw LSST_EXCEPT(lsst::pex::exceptions::InvalidParameterException, 
       	    "Error: Input ratingScope has invalid value.");
     } else {
@@ -103,6 +104,23 @@ void sdqa::SdqaRating::set(std::string metricName, double metricValue,
         _metricValue = metricValue;  
         _metricErr   = metricErr;    
     }
+}
+
+void sdqa::SdqaRating::setParentDbId(boost::int64_t parentDbId) {
+    if (parentDbId < 1) {
+        throw LSST_EXCEPT(lsst::pex::exceptions::InvalidParameterException, 
+      	    "Error: Input parentDbId must be > zero.");
+    } else {
+        _parentDbId = parentDbId;
+    }
+}
+
+void sdqa::SdqaRating::setsetSdqaMetricId(int sdqa_metricId) {
+    _sdqa_metricId = sdqa_metricId;
+}
+
+void sdqa::SdqaRating::setSdqaThresholdId(int sdqa_thresholdId) {
+    _sdqa_thresholdId = sdqa_thresholdId;
 }
 
 
@@ -124,6 +142,18 @@ double sdqa::SdqaRating::getErr() const {
 
 sdqa::SdqaRating::RatingScope sdqa::SdqaRating::getRatingScope() const {
     return _ratingScope;
+}
+
+boost::int64_t sdqa::SdqaRating::getParentDbId() const {
+    return _parentDbId;
+}
+
+int sdqa::SdqaRating::getsetSdqaMetricId() const {
+    return _sdqa_metricId;
+}
+
+int sdqa::SdqaRating::getsetSdqaThresholdId() const {
+    return _sdqa_thresholdId;
 }
 
 
@@ -155,6 +185,8 @@ bool sdqa::SdqaRating::operator == (sdqa::SdqaRating const & other) const {
         return false;
     } else if (_ratingScope != other._ratingScope) {
         return false;
+    } else if (_parentDbId != other._parentDbId) {
+        return false;
     } 
     return true;
 }
@@ -166,6 +198,7 @@ bool sdqa::SdqaRating::operator == (sdqa::SdqaRating const & other) const {
 
 template <typename Archive> 
 void sdqa::SdqaRating::serialize(Archive & ar, unsigned int const version) {
+    ar & _parentDbId;
     ar & _metricValue;
     ar & _metricErr;
 }
@@ -225,26 +258,14 @@ sdqa::SdqaRatingSet sdqa::PersistableSdqaRatingVector::getSdqaRatings() const {
 
 
 /**
- * Overloaded equality operators for PersistableSdqaRatingVector class.
+ * Overloaded equality operator for PersistableSdqaRatingVector class.
  */
-
-bool sdqa::PersistableSdqaRatingVector::operator ==
-    (sdqa::SdqaRatingSet const & other) const {
-    if (_sdqaRatings.size() != other.size())
-        return false;
-
-    sdqa::SdqaRatingSet::size_type i;
-    for (i = 0; i < _sdqaRatings.size(); ++i) {
-        if (*_sdqaRatings[i] != *other[i])
-            return false;
-    }
-
-    return true;
-}
 
 bool sdqa::PersistableSdqaRatingVector::operator == 
     (sdqa::PersistableSdqaRatingVector const & other) 
     const {
     return other == _sdqaRatings;
 }
+
+
 
