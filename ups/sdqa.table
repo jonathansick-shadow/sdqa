@@ -1,5 +1,6 @@
-setupRequired(utils)
-setupRequired(pex_exceptions)
+setupRequired(utils >= 3.4.3)
+setupRequired(pex_exceptions >= 3.2.2)
+setupRequired(daf_base >= 3.2.3)
 
 envAppend(LD_LIBRARY_PATH, ${PRODUCT_DIR}/lib)
 envAppend(DYLD_LIBRARY_PATH, ${PRODUCT_DIR}/lib)
