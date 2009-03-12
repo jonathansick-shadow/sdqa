@@ -88,15 +88,19 @@ private:
     int            _sdqa_thresholdId;
 
     void setParentDbId(boost::int64_t parentDbId);
-    void setsetSdqaMetricId(int sdqa_metricId);
+    void setSdqaMetricId(int sdqa_metricId);
     void setSdqaThresholdId(int sdqa_thresholdId);
 
     boost::int64_t getParentDbId() const;
-    int getsetSdqaMetricId() const;
-    int getsetSdqaThresholdId() const;
+    int getSdqaMetricId() const;
+    int getSdqaThresholdId() const;
 
     template <typename Archive> 
-    void serialize(Archive & ar, unsigned int const version);
+    void serialize(Archive & ar, unsigned int const version) {
+        ar & _parentDbId;
+        ar & _metricValue;
+        ar & _metricErr;
+    }
 
     friend class boost::serialization::access;
     friend class SdqaRatingVectorFormatter;   

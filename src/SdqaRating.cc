@@ -115,7 +115,7 @@ void sdqa::SdqaRating::setParentDbId(boost::int64_t parentDbId) {
     }
 }
 
-void sdqa::SdqaRating::setsetSdqaMetricId(int sdqa_metricId) {
+void sdqa::SdqaRating::setSdqaMetricId(int sdqa_metricId) {
     _sdqa_metricId = sdqa_metricId;
 }
 
@@ -148,11 +148,11 @@ boost::int64_t sdqa::SdqaRating::getParentDbId() const {
     return _parentDbId;
 }
 
-int sdqa::SdqaRating::getsetSdqaMetricId() const {
+int sdqa::SdqaRating::getSdqaMetricId() const {
     return _sdqa_metricId;
 }
 
-int sdqa::SdqaRating::getsetSdqaThresholdId() const {
+int sdqa::SdqaRating::getSdqaThresholdId() const {
     return _sdqa_thresholdId;
 }
 
@@ -190,19 +190,6 @@ bool sdqa::SdqaRating::operator == (sdqa::SdqaRating const & other) const {
     } 
     return true;
 }
-
-
-/**
- * Private serialize function for SdqaRating class.
- */
-
-template <typename Archive> 
-void sdqa::SdqaRating::serialize(Archive & ar, unsigned int const version) {
-    ar & _parentDbId;
-    ar & _metricValue;
-    ar & _metricErr;
-}
-
 
 
 /************************************
