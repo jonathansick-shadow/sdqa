@@ -1,0 +1,24 @@
+# -*- python -*-
+Import("env")
+import glob
+
+env.Program(["SdqaMetric_1.cc"], LIBS=env.getlibs(env["eups_product"]))
+env.Program(["SdqaThreshold_1.cc"], LIBS=env.getlibs(env["eups_product"]))
+env.Program(["SdqaRating_1.cc"], LIBS=env.getlibs(env["eups_product"]))
+env.Program(["SdqaRatingSet_1.cc"], LIBS=env.getlibs(env["eups_product"]))
+env.Program(["SdqaImageStatus_1.cc"], LIBS=env.getlibs(env["eups_product"]))
+
+#
+# Tests
+#
+import lsst.tests
+
+tests = lsst.tests.Control(env, verbose = True)
+tests.run("*.cc")
+
+# This one seems a bit harder to make generic.
+for target in tests.run("*.py"):
+     env.Depends(target,
+        "../python/lsst/sdqa/_sdqaLib%s" % (env['LDMODULESUFFIX']))
+
+
