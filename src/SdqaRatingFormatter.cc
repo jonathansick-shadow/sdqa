@@ -134,29 +134,6 @@ void qa::SdqaRatingVectorFormatter::delegateSerialize(
     archive & boost::serialization::base_object<bas::Persistable>(*p);
     archive & p->_sdqaRatings;
 
-    /*
-    qa::SdqaRatingSet::size_type sz;
-
-    if (Archive::is_loading::value) {        
-        qa::SdqaRating data;        
-        archive & sz;
-        p->_sdqaRatings.clear();
-        p->_sdqaRatings.reserve(sz);
-        for (; sz > 0; --sz) {
-            archive & data;
-            qa::SdqaRating::Ptr sdqaRatingPtr(new qa::SdqaRating(data));
-            p->_sdqaRatings.push_back(sdqaRatingPtr);
-        }
-    } else {
-        sz = p->_sdqaRatings.size();
-        archive & sz;
-        qa::SdqaRatingSet::iterator i = p->_sdqaRatings.begin();
-        qa::SdqaRatingSet::iterator const end(p->_sdqaRatings.end());
-        for ( ; i != end; ++i) {
-            archive &  **i;
-        }
-    }
-    */
 }
 
 
@@ -234,8 +211,15 @@ void qa::SdqaRatingVectorFormatter::write(
         }
         bs->getOArchive() & *p;
 
-	/*
+    /* This part needs more work because of differences between XmlStorage and BoostStorage,
+       to be fixed for DC3b.
     } else if (typeid(*storage) == typeid(per::XmlStorage)) {
+
+
+        throw LSST_EXCEPT(ex::RuntimeErrorException,
+            "Need to add code here to assign parentDbId, etc.");
+
+
         per::XmlStorage * xs = 
             dynamic_cast<per::XmlStorage *>(storage.get());
         if (xs == 0) {
@@ -243,7 +227,7 @@ void qa::SdqaRatingVectorFormatter::write(
                 "Didn't get XmlStorage");
         }
         xs->getOArchive() & *p;
-	*/
+   */
 
     } else if (typeid(*storage) == typeid(per::DbStorage) || 
                typeid(*storage) == typeid(per::DbTsvStorage)) {
@@ -413,7 +397,8 @@ bas::Persistable* qa::SdqaRatingVectorFormatter::read(
         }
         bs->getIArchive() & *p;
 
-	/*
+    /* This part needs more work because of differences between XmlStorage and BoostStorage,
+       to be fixed for DC3b.
     } else if (typeid(*storage) == typeid(per::XmlStorage)) {
         per::XmlStorage* xs = 
             dynamic_cast<per::XmlStorage *>(storage.get());
@@ -422,7 +407,7 @@ bas::Persistable* qa::SdqaRatingVectorFormatter::read(
                 "Didn't get XmlStorage");
         }
         xs->getIArchive() & *p;
-	*/
+    */
 
     } else if (typeid(*storage) == typeid(per::DbStorage) || 
                typeid(*storage) == typeid(per::DbTsvStorage)) {
