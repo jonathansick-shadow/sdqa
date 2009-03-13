@@ -7,6 +7,72 @@ Run with:
 or
    python
    >>> import unittest; T=load("SdqaRatingFormatter_1"); unittest.TextTestRunner(verbosity=1).run(T.suite())
+
+
+Instructions for set-up prior to running test:
+
+1. Create a mySQL database called "russ" and load DC3a schema, along with the data contents of the 
+   sdqa_Metric and sdqa_Threshold tables.
+
+2. Drop the Science_Amp_Exposure table and reload it using the following 
+   (in order to remove foreign-key constraints):
+
+CREATE TABLE Science_Amp_Exposure
+(
+	scienceAmpExposureId BIGINT NOT NULL,
+	scienceCCDExposureId BIGINT NOT NULL,
+	rawAmpExposureId BIGINT NULL,
+	ampId INTEGER NULL,
+	filterId INTEGER NULL,
+	equinox FLOAT(0) NULL,
+	url VARCHAR(255) NULL,
+	ctype1 VARCHAR(20) NULL,
+	ctype2 VARCHAR(20) NULL,
+	crpix1 FLOAT(0) NULL,
+	crpix2 FLOAT(0) NULL,
+	crval1 DOUBLE NULL,
+	crval2 DOUBLE NULL,
+	cd1_1 DOUBLE NULL,
+	cd2_1 DOUBLE NULL,
+	cd1_2 DOUBLE NULL,
+	cd2_2 DOUBLE NULL,
+	dateObs TIMESTAMP NULL DEFAULT 0,
+	expTime FLOAT(0) NULL,
+	ccdSize VARCHAR(50) NULL,
+	photoFlam FLOAT(0) NULL,
+	photoZP FLOAT(0) NULL,
+	nCombine INTEGER NULL DEFAULT 1,
+	taiMjd DOUBLE NULL,
+	bixX INTEGER NULL,
+	binY INTEGER NULL,
+	readNoise DOUBLE NULL,
+	saturationLimit BIGINT NULL,
+	dataSection VARCHAR(24) NULL,
+	gain DOUBLE NULL,
+	PRIMARY KEY (scienceAmpExposureId),
+	KEY (rawAmpExposureId),
+	KEY (scienceCCDExposureId)
+) ;
+
+3. Load the following record -- only scienceAmpExposureId=1234 is important for the test:
+
+insert into Science_Amp_Exposure
+(scienceAmpExposureId, scienceCCDExposureId, rawAmpExposureId, ampId, filterId,
+equinox, url, ctype1, ctype2,
+crpix1, crpix2,  crval1, crval2, cd1_1, cd2_1,  cd1_2,  cd2_2,
+dateObs, expTime, ccdSize, photoFlam, photoZP, nCombine,
+taiMjd, bixX, binY, readNoise, saturationLimit, dataSection, gain)
+values
+(1234, 2, 3, 4, 5,
+6.0, '7', '8', '9',
+10.0, 11.0, 12.00, 13.00, 14.00, 15.00, 16.00, 17.00,
+'2009-01-28 10:44:14.10845', 18.0, '19', 20.0, 21.0, 22,
+23.0, 24, 25, 26.0, 27, '28', 29.00);
+
+4. Create a .lsst.db.auth file in the tests directory with the following line:
+
+dbuser:dbpassword
+
 """
 import pdb
 import unittest
