@@ -8,7 +8,7 @@ import lsst.SConsUtils as scons
 dependencies = ["python", "utils", "pex_exceptions", "daf_base"]
 
 env = scons.makeEnv("sdqa",
-                    r"$HeadURL: svn+ssh://svn.lsstcorp.org/DMS/sdqa/trunk/SConstruct $",
+                    r"$HeadURL$",
                     [["boost", "boost/shared_ptr.hpp"],
                      ["boost", "boost/regex.hpp", "boost_regex:C++"],
                      ["utils", "lsst/utils/Utils.h", "utils:C++"],
