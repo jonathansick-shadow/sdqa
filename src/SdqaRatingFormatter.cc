@@ -1,7 +1,7 @@
 // -*- lsst-c++ -*-
 
 /** 
- * \file SdqaRatingFormatter.h
+ * \file SdqaRatingFormatter.cc
  *
  * \ingroup sdqa
  *
@@ -12,6 +12,7 @@
  *             - lsst::daf::persistence::DbStorage
  *             - lsst::daf::persistence::DbTsvStorage
  *             - lsst::daf::persistence::BoostStorage
+ *             - lsst::daf::persistence::XmlStorage
  *
  *        for PersistableSdqaRatingVector instances.
  *
@@ -19,6 +20,7 @@
  */
 
 #include <memory>
+#include <map>
 
 #include "boost/format.hpp"
 #include "lsst/daf/base.h"
@@ -102,7 +104,7 @@ template void qa::SdqaRatingVectorFormatter::insertRow<per::DbTsvStorage>(
 
 
 /*
- *Lookup a metricName in the sdqa_Metric database table to find a sdqa_metricId.
+ * Query on a metricName in the sdqa_Metric database table to find a sdqa_metricId.
  */
 
 static int lookupSdqaMetricId(per::DbStorage* db, std::string metricName) {
@@ -122,7 +124,28 @@ static int lookupSdqaMetricId(per::DbStorage* db, std::string metricName) {
 
 
 /*
- *Lookup an sdqa_metricId in the database to find an sdqa_metricId.
+ * Given an sdqa_metricId in the sdqa_Metric database table, lookup a metricName.
+ */
+
+static std::string lookupSdqaMetricName(per::DbStorage* db, int sdqa_metricId) {
+    db->setTableForQuery("sdqa_Metric");
+    db->outColumn("metricName");
+    db->condParam<int>("id", sdqa_metricId);
+    db->setQueryWhere("sdqa_metricId = :id");
+    db->query();
+    if (!db->next() || db->columnIsNull(0)) {
+        throw LSST_EXCEPT(ex::RuntimeErrorException,
+                          "Unable to get metricName for sdqa_metricId: " + sdqa_metricId);
+    }
+    std::string metricName = db->getColumnByPos<std::string>(0);
+    db->finishQuery();
+    return metricName;
+}
+
+
+/*
+ * Given an sdqa_metricId, query the sdqa_Threshold database table to lookup
+ * the corresponding sdqa_thresholdId.
  */
 
 static int lookupSdqaThresholdId(per::DbStorage* db, int sdqa_metricId) {
@@ -170,7 +193,9 @@ void qa::SdqaRatingVectorFormatter::delegateSerialize(
         dynamic_cast<qa::PersistableSdqaRatingVector*>(persistable);
 
     archive & boost::serialization::base_object<bas::Persistable>(*p);
-    
+    archive & p->_sdqaRatings;
+
+    /*
     qa::SdqaRatingSet::size_type sz;
 
     if (Archive::is_loading::value) {        
@@ -192,22 +217,12 @@ void qa::SdqaRatingVectorFormatter::delegateSerialize(
             archive &  **i;
         }
     }
+    */
 }
 
 
-template 
-void qa::SdqaRatingVectorFormatter::delegateSerialize<boost::archive::text_oarchive>(
-    boost::archive::text_oarchive &, unsigned int const, bas::Persistable *
-);
-
-template 
-void qa::SdqaRatingVectorFormatter::delegateSerialize<boost::archive::text_iarchive>(
-    boost::archive::text_iarchive &, unsigned int const, bas::Persistable *
-);
-
-
 /** 
- * Persist a set of SdqaRating objects to BoostStorage, DbStorage or DbTsvStorage.
+ * Persist set of SdqaRating objects to BoostStorage, XmlStorage, DbStorage or DbTsvStorage.
  */
 
 void qa::SdqaRatingVectorFormatter::write(
@@ -273,7 +288,7 @@ void qa::SdqaRatingVectorFormatter::write(
 
         // Look up the sdqa_metricId given the metricName.
 	std::string metricName = (*i)->qa::SdqaRating::getName();
-        int sdqa_metricId = lookupSdqaMetricId( db_sdqa, metricName);
+        int sdqa_metricId = lookupSdqaMetricId(db_sdqa, metricName);
         (*i)->qa::SdqaRating::setSdqaMetricId(sdqa_metricId);
 
         // Look up the sdqa_thresholdId given the metricName.
@@ -296,6 +311,17 @@ void qa::SdqaRatingVectorFormatter::write(
                 "Didn't get BoostStorage");
         }
         bs->getOArchive() & *p;
+
+	/*
+    } else if (typeid(*storage) == typeid(per::XmlStorage)) {
+        per::XmlStorage * xs = 
+            dynamic_cast<per::XmlStorage *>(storage.get());
+        if (xs == 0) {
+            throw LSST_EXCEPT(ex::RuntimeErrorException, 
+                "Didn't get XmlStorage");
+        }
+        xs->getOArchive() & *p;
+	*/
 
     } else if (typeid(*storage) == typeid(per::DbStorage) || 
                typeid(*storage) == typeid(per::DbTsvStorage)) {
@@ -341,7 +367,7 @@ void qa::SdqaRatingVectorFormatter::write(
 
 
 /** 
- * Retrieve a set of SdqaRating objects from BoostStorage, DbStorage or DbTsvStorage.
+ * Retrieve SdqaRating objects from BoostStorage, XmlStorage, DbStorage or DbTsvStorage.
  */
 
 bas::Persistable* qa::SdqaRatingVectorFormatter::read(
@@ -355,28 +381,32 @@ bas::Persistable* qa::SdqaRatingVectorFormatter::read(
     std::string tableName;
     std::string sdqaRatingScope = extractSdqaRatingScope(additionalData);
     std::string columnNameOfImageId;
+    qa::SdqaRating::RatingScope ratingScope;
 
     if (sdqaRatingScope == "AMP") {
         parentDbId = extractAmpExposureId(additionalData);
         tableName = "sdqa_Rating_ForScienceAmpExposure";
         columnNameOfImageId = "ampExposureId";
+        ratingScope = sdqa::SdqaRating::AMP;
     } else if  (sdqaRatingScope == "CCD") {
         parentDbId = extractCcdExposureId(additionalData);
         tableName = "sdqa_Rating_ForScienceCCDExposure";
         columnNameOfImageId = "ccdExposureId";
+        ratingScope = sdqa::SdqaRating::CCD;
     } else if  (sdqaRatingScope == "FPA") {
         parentDbId = extractExposureId(additionalData);
         tableName = "sdqa_Rating_ForScienceFPAExposure";
         columnNameOfImageId = "exposureId";
+        ratingScope = sdqa::SdqaRating::FPA;
     } else if  (sdqaRatingScope == "FOOTPRINT") {
         parentDbId = extractAmpExposureId(additionalData);
         tableName = "sdqa_Rating_ForScienceAmpExposure";
         columnNameOfImageId = "ampExposureId";
+        ratingScope = sdqa::SdqaRating::FOOTPRINT;
     }
 
 
     if (typeid(*storage) == typeid(per::BoostStorage)) {
-    	//handle retrieval from BoostStorage
         per::BoostStorage* bs = 
             dynamic_cast<per::BoostStorage *>(storage.get());
         if (bs == 0) { 
@@ -384,6 +414,17 @@ bas::Persistable* qa::SdqaRatingVectorFormatter::read(
                 "Didn't get BoostStorage");
         }
         bs->getIArchive() & *p;
+
+	/*
+    } else if (typeid(*storage) == typeid(per::XmlStorage)) {
+        per::XmlStorage* xs = 
+            dynamic_cast<per::XmlStorage *>(storage.get());
+        if (xs == 0) { 
+            throw LSST_EXCEPT(ex::RuntimeErrorException, 
+                "Didn't get XmlStorage");
+        }
+        xs->getIArchive() & *p;
+	*/
 
     } else if (typeid(*storage) == typeid(per::DbStorage) || 
                typeid(*storage) == typeid(per::DbTsvStorage)) {
@@ -394,15 +435,44 @@ bas::Persistable* qa::SdqaRatingVectorFormatter::read(
                 "Didn't get DbStorage");
         }
 
+
+
+
+        /*
+	 * Query the sdqa_Metric database table for all metricNames vs. sdqa_metricId
+         * and store it in a map.
+	 */
+
+	std::map<int, std::string, std::less< int > > metricNames;
+
+        db->setTableForQuery("sdqa_Metric");
+        db->outColumn("sdqa_metricId");
+        db->outColumn("metricName");
+        db->query();
+        while (db->next()) {
+            int sdqa_metricId = db->getColumnByPos<int>(0);
+            std::string metricName = db->getColumnByPos<std::string>(1);
+            metricNames.insert(std::map<int, std::string, std::less< int > >::value_type(sdqa_metricId, metricName));
+	}
+        db->finishQuery();
+
+
+        /*
+	 * Query the appropriate sdqa_Rating_xxx database table.
+	 */
+
         db->setTableForQuery(tableName);
 
         qa::SdqaRatingSet sdqaRatingVector;
         qa::SdqaRating data;
-            
+
+        data._ratingScope = ratingScope;
+
         setupFetch(*db, data, columnNameOfImageId);
         db->query();
-            
+
         while (db->next()) {
+	    data._metricName = metricNames[ data._sdqa_metricId ];
             qa::SdqaRating::Ptr sdqaRatingPtr(new qa::SdqaRating(data));
             sdqaRatingVector.push_back(sdqaRatingPtr);
         }
@@ -458,5 +528,6 @@ std::string const qa::SdqaRatingVectorFormatter::extractSdqaRatingScope(
     std::string sdqaRatingScope = properties->getAsString("sdqaRatingScope");
     return sdqaRatingScope;
 }
+
 
 

@@ -119,6 +119,10 @@ void sdqa::SdqaRating::setSdqaMetricId(int sdqa_metricId) {
     _sdqa_metricId = sdqa_metricId;
 }
 
+void sdqa::SdqaRating::setSdqaMetricName(std::string metricName) {
+    _metricName = metricName;
+}
+
 void sdqa::SdqaRating::setSdqaThresholdId(int sdqa_thresholdId) {
     _sdqa_thresholdId = sdqa_thresholdId;
 }
@@ -245,14 +249,29 @@ sdqa::SdqaRatingSet sdqa::PersistableSdqaRatingVector::getSdqaRatings() const {
 
 
 /**
- * Overloaded equality operator for PersistableSdqaRatingVector class.
+ * Overloaded equality operators for PersistableSdqaRatingVector class.
  */
+
+bool sdqa::PersistableSdqaRatingVector::operator == 
+    (sdqa::SdqaRatingSet const & other) const {
+    if (_sdqaRatings.size() != other.size())
+        return false;
+                    
+    sdqa::SdqaRatingSet::size_type i;
+    for (i = 0; i < _sdqaRatings.size(); ++i) {
+        if (*_sdqaRatings[i] != *other[i])
+            return false;            
+    }
+        
+    return true;
+}
 
 bool sdqa::PersistableSdqaRatingVector::operator == 
     (sdqa::PersistableSdqaRatingVector const & other) 
     const {
     return other == _sdqaRatings;
 }
+
 
 
 

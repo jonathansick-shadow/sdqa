@@ -1,7 +1,7 @@
 // -*- lsst-c++ -*-
 
 /** 
- * \file SdqaRatingFormatter.cc
+ * \file SdqaRatingFormatter.h
  *
  * \ingroup sdqa
  *
@@ -12,6 +12,7 @@
  *             - lsst::daf::persistence::DbStorage
  *             - lsst::daf::persistence::DbTsvStorage
  *             - lsst::daf::persistence::BoostStorage
+ *             - lsst::daf::persistence::XmlStorage
  *
  *        for PersistableSdqaRatingVector instances.
  *
@@ -25,6 +26,8 @@
 #include <vector>
 
 #include "boost/cstdint.hpp"
+#include "boost/serialization/shared_ptr.hpp"
+#include "boost/serialization/vector.hpp"
 
 #include "lsst/daf/base.h"
 #include "lsst/daf/persistence.h"
@@ -64,13 +67,6 @@ public:
         unsigned int const,
         lsst::daf::base::Persistable *
     );
-
-    int64_t extractExposureId(lsst::daf::base::PropertySet::Ptr const& properties);
-    int64_t extractCcdExposureId(lsst::daf::base::PropertySet::Ptr const& properties);
-    int64_t extractAmpExposureId(lsst::daf::base::PropertySet::Ptr const& properties);
-
-    std::string const
-        extractSdqaRatingScope(lsst::daf::base::PropertySet::Ptr const & properties);
 
 private:
 
@@ -112,6 +108,12 @@ private:
         std::string columnNameOfImageId
     );
 
+    int64_t extractExposureId(lsst::daf::base::PropertySet::Ptr const& properties);
+    int64_t extractCcdExposureId(lsst::daf::base::PropertySet::Ptr const& properties);
+    int64_t extractAmpExposureId(lsst::daf::base::PropertySet::Ptr const& properties);
+
+    std::string const
+        extractSdqaRatingScope(lsst::daf::base::PropertySet::Ptr const & properties);
 };
 
 
@@ -120,5 +122,6 @@ private:
 } // namespace lsst
 
 #endif // LSST_SDQA_SDQARATINGFORMATTER_H
+
 
 
