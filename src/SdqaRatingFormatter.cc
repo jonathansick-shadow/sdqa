@@ -103,67 +103,6 @@ template void qa::SdqaRatingVectorFormatter::insertRow<per::DbTsvStorage>(
 //! \endcond
 
 
-/*
- * Query on a metricName in the sdqa_Metric database table to find a sdqa_metricId.
- */
-
-static int lookupSdqaMetricId(per::DbStorage* db, std::string metricName) {
-    db->setTableForQuery("sdqa_Metric");
-    db->outColumn("sdqa_metricId");
-    db->condParam<std::string>("name", metricName);
-    db->setQueryWhere("metricName = :name");
-    db->query();
-    if (!db->next() || db->columnIsNull(0)) {
-        throw LSST_EXCEPT(ex::RuntimeErrorException,
-                          "Unable to get sdqa_metricId for metricName: " + metricName);
-    }
-    int sdqa_metricId = db->getColumnByPos<int>(0);
-    db->finishQuery();
-    return sdqa_metricId;
-}
-
-
-/*
- * Given an sdqa_metricId in the sdqa_Metric database table, lookup a metricName.
- */
-
-static std::string lookupSdqaMetricName(per::DbStorage* db, int sdqa_metricId) {
-    db->setTableForQuery("sdqa_Metric");
-    db->outColumn("metricName");
-    db->condParam<int>("id", sdqa_metricId);
-    db->setQueryWhere("sdqa_metricId = :id");
-    db->query();
-    if (!db->next() || db->columnIsNull(0)) {
-        throw LSST_EXCEPT(ex::RuntimeErrorException,
-                          "Unable to get metricName for sdqa_metricId: " + sdqa_metricId);
-    }
-    std::string metricName = db->getColumnByPos<std::string>(0);
-    db->finishQuery();
-    return metricName;
-}
-
-
-/*
- * Given an sdqa_metricId, query the sdqa_Threshold database table to lookup
- * the corresponding sdqa_thresholdId.
- */
-
-static int lookupSdqaThresholdId(per::DbStorage* db, int sdqa_metricId) {
-    db->setTableForQuery("sdqa_Threshold");
-    db->outColumn("sdqa_thresholdId");
-    db->condParam<int>("id", sdqa_metricId);
-    db->setQueryWhere("sdqa_metricId = :id");
-    db->query();
-    if (!db->next() || db->columnIsNull(0)) {
-        throw LSST_EXCEPT(ex::RuntimeErrorException,
-            "Unable to get sdqa_metricId for sdqa_metricId: " + sdqa_metricId);
-    }
-    int sdqa_thresholdId = db->getColumnByPos<int>(0);
-    db->finishQuery();
-    return sdqa_thresholdId;
-}
-
-
 /*!     
     Gets a single SdqaRating from an instance of lsst::daf::persistence::DbStorage or 
     subclass thereof.
@@ -247,9 +186,6 @@ void qa::SdqaRatingVectorFormatter::write(
     qa::SdqaRatingSet sdqaRatingVector = p->getSdqaRatings();   
 
 
-    qa::SdqaRatingSet::iterator i = sdqaRatingVector.begin();
-
-
     /*
        Assume all SDQA Ratings in the set have the same scope and 
        parent DB ID.
@@ -258,6 +194,7 @@ void qa::SdqaRatingVectorFormatter::write(
     int64_t parentDbId;
     std::string tableName;
     std::string columnNameOfImageId;
+    qa::SdqaRatingSet::iterator i = sdqaRatingVector.begin();
 
     if ((*i)->qa::SdqaRating::getRatingScope() == 
         qa::SdqaRating::AMP) {
@@ -281,29 +218,14 @@ void qa::SdqaRatingVectorFormatter::write(
         columnNameOfImageId = "ampExposureId";
     }
 
-    unsigned short seq    = 1;
-    per::DbStorage* db_sdqa = dynamic_cast<per::DbStorage*>(storage.get());
-
-    for ( ; i != sdqaRatingVector.end(); ++i) {
-
-        // Look up the sdqa_metricId given the metricName.
-	std::string metricName = (*i)->qa::SdqaRating::getName();
-        int sdqa_metricId = lookupSdqaMetricId(db_sdqa, metricName);
-        (*i)->qa::SdqaRating::setSdqaMetricId(sdqa_metricId);
-
-        // Look up the sdqa_thresholdId given the metricName.
-        int sdqa_thresholdId = lookupSdqaThresholdId(db_sdqa, sdqa_metricId);
-        (*i)->qa::SdqaRating::setSdqaThresholdId(sdqa_thresholdId);
-
-        (*i)->qa::SdqaRating::setParentDbId(parentDbId);
-        ++seq;
-        if (seq == 0) { // Overflowed
-            throw LSST_EXCEPT(ex::RuntimeErrorException, 
-                "Too many SdqaRatings");
-        }
-    }
 
     if (typeid(*storage) == typeid(per::BoostStorage)) {
+
+
+        throw LSST_EXCEPT(ex::RuntimeErrorException, 
+            "Need to add code here to assign parentDbId, etc.");
+
+
         per::BoostStorage * bs = 
             dynamic_cast<per::BoostStorage *>(storage.get());
         if (bs == 0) {
@@ -334,15 +256,88 @@ void qa::SdqaRatingVectorFormatter::write(
                     "Didn't get DbStorage");
             }
 
+
+            /*
+	     * Query the sdqa_Metric database table for all sdqa_metricIds vs. metricName
+             * and store it in a map.
+	     */
+
+	    std::map<std::string, int, std::less< std::string > > sdqa_metricIds;
+
+            db->setTableForQuery("sdqa_Metric");
+            db->outColumn("sdqa_metricId");
+            db->outColumn("metricName");
+            db->query();
+            while (db->next()) {
+                int sdqa_metricId = db->getColumnByPos<int>(0);
+                std::string metricName = db->getColumnByPos<std::string>(1);
+                sdqa_metricIds.insert(std::map<std::string, int, 
+                    std::less< std::string > >::value_type(metricName, sdqa_metricId));
+	    }
+            db->finishQuery();
+
+
+            /*
+	     * Query the sdqa_Threshold database table for all sdqa_thresholdIds vs. 
+	     * sdqa_metricId and store it in a map.
+	     */
+
+	    std::map<int, int, std::less< int > > sdqa_thresholdIds;
+
+            db->setTableForQuery("sdqa_Threshold");
+            db->outColumn("sdqa_metricId");
+            db->outColumn("sdqa_thresholdId");
+            db->query();
+            while (db->next()) {
+                int sdqa_metricId = db->getColumnByPos<int>(0);
+                int sdqa_thresholdId = db->getColumnByPos<int>(1);
+                sdqa_thresholdIds.insert(std::map<int, int, 
+                   std::less< int > >::value_type(sdqa_metricId, sdqa_thresholdId));
+	    }
+            db->finishQuery();
+
+
+            unsigned short seq    = 1;
+            qa::SdqaRatingSet::iterator i = sdqaRatingVector.begin();
+
+            for ( ; i != sdqaRatingVector.end(); ++i) {
+
+                // Look up the sdqa_metricId given the metricName.
+	        std::string metricName = (*i)->qa::SdqaRating::getName();
+                int sdqa_metricId = sdqa_metricIds[metricName];
+                (*i)->qa::SdqaRating::setSdqaMetricId(sdqa_metricId);
+
+                // Look up the sdqa_thresholdId given the sdqa_metricId.
+                int sdqa_thresholdId = sdqa_thresholdIds[sdqa_metricId];
+                (*i)->qa::SdqaRating::setSdqaThresholdId(sdqa_thresholdId);
+
+                (*i)->qa::SdqaRating::setParentDbId(parentDbId);
+                ++seq;
+                if (seq == 0) { // Overflowed
+                    throw LSST_EXCEPT(ex::RuntimeErrorException, 
+                        "Too many SdqaRatings");
+                }
+            }
+
+
+            /*
+	     * Insert rows into the appropriate sdqa_Rating_xxx database table.
+	     */
+
             db->setTableForInsert(tableName);
-            
-            qa::SdqaRatingSet::const_iterator i(sdqaRatingVector.begin());
+
+            qa::SdqaRatingSet::const_iterator j(sdqaRatingVector.begin());
             qa::SdqaRatingSet::const_iterator const end(sdqaRatingVector.end());
-            for ( ; i != end; ++i) {
-	      insertRow<per::DbStorage>(*db, **i, columnNameOfImageId);
+            for ( ; j != end; ++j) {
+	      insertRow<per::DbStorage>(*db, **j, columnNameOfImageId);
             }
 
         } else {
+
+
+            throw LSST_EXCEPT(ex::RuntimeErrorException, 
+                "Need to add code here to assign parentDbId, etc.");
+
 
             per::DbTsvStorage * db = 
                 dynamic_cast<per::DbTsvStorage *>(storage.get());
@@ -360,8 +355,11 @@ void qa::SdqaRatingVectorFormatter::write(
         }
 
     } else {
+
+
         throw LSST_EXCEPT(ex::InvalidParameterException, 
             "Storage type is not supported"); 
+
     }
 }
 
@@ -436,8 +434,6 @@ bas::Persistable* qa::SdqaRatingVectorFormatter::read(
         }
 
 
-
-
         /*
 	 * Query the sdqa_Metric database table for all metricNames vs. sdqa_metricId
          * and store it in a map.
@@ -472,7 +468,7 @@ bas::Persistable* qa::SdqaRatingVectorFormatter::read(
         db->query();
 
         while (db->next()) {
-	    data._metricName = metricNames[ data._sdqa_metricId ];
+	    data._metricName = metricNames[data._sdqa_metricId];
             qa::SdqaRating::Ptr sdqaRatingPtr(new qa::SdqaRating(data));
             sdqaRatingVector.push_back(sdqaRatingPtr);
         }
