@@ -88,15 +88,22 @@ private:
     int            _sdqa_thresholdId;
 
     void setParentDbId(boost::int64_t parentDbId);
-    void setsetSdqaMetricId(int sdqa_metricId);
+    void setSdqaMetricId(int sdqa_metricId);
+    void setSdqaMetricName(std::string metricName);
     void setSdqaThresholdId(int sdqa_thresholdId);
 
     boost::int64_t getParentDbId() const;
-    int getsetSdqaMetricId() const;
-    int getsetSdqaThresholdId() const;
+    int getSdqaMetricId() const;
+    int getSdqaThresholdId() const;
 
     template <typename Archive> 
-    void serialize(Archive & ar, unsigned int const version);
+    void serialize(Archive & ar, unsigned int const version) {
+        ar & _sdqa_metricId;
+        ar & _sdqa_thresholdId;
+        ar & _parentDbId;
+        ar & _metricValue;
+        ar & _metricErr;
+    }
 
     friend class boost::serialization::access;
     friend class SdqaRatingVectorFormatter;   
@@ -140,23 +147,7 @@ public:
     
     SdqaRatingSet getSdqaRatings() const;
 
-    //bool operator == (SdqaRatingSet const & other) const;
-
-bool operator == 
-    (SdqaRatingSet const & other) const {
-    if (_sdqaRatings.size() != other.size())
-        return false;
-                    
-    SdqaRatingSet::size_type i;
-    for (i = 0; i < _sdqaRatings.size(); ++i) {
-        if (*_sdqaRatings[i] != *other[i])
-            return false;            
-    }
-        
-    return true;
-}
-
-
+    bool operator == (SdqaRatingSet const & other) const;
 
     bool operator == (PersistableSdqaRatingVector const & other) const;
 
@@ -171,4 +162,5 @@ private:
 } // namespace lsst
 
 #endif // LSST_SDQARATING_H
+
 

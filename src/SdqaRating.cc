@@ -115,8 +115,12 @@ void sdqa::SdqaRating::setParentDbId(boost::int64_t parentDbId) {
     }
 }
 
-void sdqa::SdqaRating::setsetSdqaMetricId(int sdqa_metricId) {
+void sdqa::SdqaRating::setSdqaMetricId(int sdqa_metricId) {
     _sdqa_metricId = sdqa_metricId;
+}
+
+void sdqa::SdqaRating::setSdqaMetricName(std::string metricName) {
+    _metricName = metricName;
 }
 
 void sdqa::SdqaRating::setSdqaThresholdId(int sdqa_thresholdId) {
@@ -148,11 +152,11 @@ boost::int64_t sdqa::SdqaRating::getParentDbId() const {
     return _parentDbId;
 }
 
-int sdqa::SdqaRating::getsetSdqaMetricId() const {
+int sdqa::SdqaRating::getSdqaMetricId() const {
     return _sdqa_metricId;
 }
 
-int sdqa::SdqaRating::getsetSdqaThresholdId() const {
+int sdqa::SdqaRating::getSdqaThresholdId() const {
     return _sdqa_thresholdId;
 }
 
@@ -190,19 +194,6 @@ bool sdqa::SdqaRating::operator == (sdqa::SdqaRating const & other) const {
     } 
     return true;
 }
-
-
-/**
- * Private serialize function for SdqaRating class.
- */
-
-template <typename Archive> 
-void sdqa::SdqaRating::serialize(Archive & ar, unsigned int const version) {
-    ar & _parentDbId;
-    ar & _metricValue;
-    ar & _metricErr;
-}
-
 
 
 /************************************
@@ -258,14 +249,29 @@ sdqa::SdqaRatingSet sdqa::PersistableSdqaRatingVector::getSdqaRatings() const {
 
 
 /**
- * Overloaded equality operator for PersistableSdqaRatingVector class.
+ * Overloaded equality operators for PersistableSdqaRatingVector class.
  */
+
+bool sdqa::PersistableSdqaRatingVector::operator == 
+    (sdqa::SdqaRatingSet const & other) const {
+    if (_sdqaRatings.size() != other.size())
+        return false;
+                    
+    sdqa::SdqaRatingSet::size_type i;
+    for (i = 0; i < _sdqaRatings.size(); ++i) {
+        if (*_sdqaRatings[i] != *other[i])
+            return false;            
+    }
+        
+    return true;
+}
 
 bool sdqa::PersistableSdqaRatingVector::operator == 
     (sdqa::PersistableSdqaRatingVector const & other) 
     const {
     return other == _sdqaRatings;
 }
+
 
 
 
