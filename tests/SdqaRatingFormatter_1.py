@@ -69,9 +69,16 @@ values
 '2009-01-28 10:44:14.10845', 18.0, '19', 20.0, 21.0, 22,
 23.0, 24, 25, 26.0, 27, '28', 29.00);
 
-4. Create a .lsst.db.auth file in the tests directory with the following line:
+4. Create a ~/.lsst/db-auth.paf file containing the following lines:
 
-dbuser:dbpassword
+database: {
+    authInfo: {
+        host: lsst10.ncsa.uiuc.edu
+        port: 3306
+        user: rlaher
+        password: xxx
+    }
+}
 
 """
 import pdb
@@ -203,14 +210,12 @@ class SdqaRatingTestCase(unittest.TestCase):
             j += 1
 
     def testPersistence(self):
-        if dafPers.DbAuth.available():
-            pol  = dafPolicy.Policy()
-            pol.set("Formatter.PersistableSdqaRatingVector.SdqaRating.templateTableName", "SdqaRating")
-            pol.set("Formatter.PersistableSdqaRatingVector.SdqaRating.perVisitTableNamePattern", "_tmp_visit%1%_SdqaRating")
+        pol  = dafPolicy.Policy("/home/rlaher/.lsst/db-auth.paf")
+        dafPers.DbAuth.setPolicy(pol)
+        if dafPers.DbAuth.available("lsst10.ncsa.uiuc.edu", "3306"):
             pers = dafPers.Persistence.getPersistence(pol)
             loc  = dafPers.LogicalLocation("mysql://lsst10.ncsa.uiuc.edu:3306/russ")
             dp = dafBase.PropertySet()
-            dp.addInt("visitId", int(time.clock())*16384 + random.randint(0,16383))
             dp.addInt("sliceId", 0)
             dp.addInt("ampExposureId", 1234)
             dp.addInt("numSlices", 1)
