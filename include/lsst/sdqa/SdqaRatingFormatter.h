@@ -25,10 +25,6 @@
 #include <string>
 #include <vector>
 
-#include "boost/cstdint.hpp"
-#include "boost/serialization/shared_ptr.hpp"
-#include "boost/serialization/vector.hpp"
-
 #include "lsst/daf/base.h"
 #include "lsst/daf/persistence.h"
 #include "lsst/daf/base/PropertySet.h"

@@ -23,6 +23,10 @@
 #include <map>
 
 #include "boost/format.hpp"
+#include "boost/cstdint.hpp"
+#include "boost/serialization/shared_ptr.hpp"
+#include "boost/serialization/vector.hpp"
+
 #include "lsst/daf/base.h"
 #include "lsst/daf/persistence.h"
 #include "lsst/pex/exceptions.h"
@@ -131,8 +135,9 @@ void qa::SdqaRatingVectorFormatter::delegateSerialize(
     qa::PersistableSdqaRatingVector * p = 
         dynamic_cast<qa::PersistableSdqaRatingVector*>(persistable);
 
-    archive & boost::serialization::base_object<bas::Persistable>(*p);
-    archive & p->_sdqaRatings;
+    archive & boost::serialization::make_nvp("base", 
+                                             boost::serialization::base_object<bas::Persistable>(*p));
+    archive & boost::serialization::make_nvp("sdqaRatings", p->_sdqaRatings);
 
 }
 
@@ -195,13 +200,21 @@ void qa::SdqaRatingVectorFormatter::write(
         columnNameOfImageId = "ampExposureId";
     }
 
+    unsigned short seq = 1;
+
+    for ( ; i != sdqaRatingVector.end(); ++i) {
+        (*i)->qa::SdqaRating::setParentDbId(parentDbId);
+        ++seq;
+        if (seq == 0) { // Overflowed
+            throw LSST_EXCEPT(ex::RuntimeErrorException, 
+                "Too many SdqaRatings");
+        }
+    }
+
+
+    /* Various storage options implemented here. */
 
     if (typeid(*storage) == typeid(per::BoostStorage)) {
-
-
-        throw LSST_EXCEPT(ex::RuntimeErrorException, 
-            "Need to add code here to assign parentDbId, etc.");
-
 
         per::BoostStorage * bs = 
             dynamic_cast<per::BoostStorage *>(storage.get());
@@ -210,15 +223,8 @@ void qa::SdqaRatingVectorFormatter::write(
                 "Didn't get BoostStorage");
         }
         bs->getOArchive() & *p;
-
-    /* This part needs more work because of differences between XmlStorage and BoostStorage,
-       to be fixed for DC3b.
+/*
     } else if (typeid(*storage) == typeid(per::XmlStorage)) {
-
-
-        throw LSST_EXCEPT(ex::RuntimeErrorException,
-            "Need to add code here to assign parentDbId, etc.");
-
 
         per::XmlStorage * xs = 
             dynamic_cast<per::XmlStorage *>(storage.get());
@@ -226,8 +232,8 @@ void qa::SdqaRatingVectorFormatter::write(
             throw LSST_EXCEPT(ex::RuntimeErrorException, 
                 "Didn't get XmlStorage");
         }
-        xs->getOArchive() & *p;
-   */
+        xs->getOArchive() & boost::serialization::make_nvp("PersisibleSdqaRatingVector", *p);
+*/
 
     } else if (typeid(*storage) == typeid(per::DbStorage) || 
                typeid(*storage) == typeid(per::DbTsvStorage)) {
@@ -295,7 +301,6 @@ void qa::SdqaRatingVectorFormatter::write(
                 int sdqa_thresholdId = sdqa_thresholdIds[sdqa_metricId];
                 (*i)->qa::SdqaRating::setSdqaThresholdId(sdqa_thresholdId);
 
-                (*i)->qa::SdqaRating::setParentDbId(parentDbId);
                 ++seq;
                 if (seq == 0) { // Overflowed
                     throw LSST_EXCEPT(ex::RuntimeErrorException, 
@@ -397,8 +402,7 @@ bas::Persistable* qa::SdqaRatingVectorFormatter::read(
         }
         bs->getIArchive() & *p;
 
-    /* This part needs more work because of differences between XmlStorage and BoostStorage,
-       to be fixed for DC3b.
+/*
     } else if (typeid(*storage) == typeid(per::XmlStorage)) {
         per::XmlStorage* xs = 
             dynamic_cast<per::XmlStorage *>(storage.get());
@@ -406,8 +410,8 @@ bas::Persistable* qa::SdqaRatingVectorFormatter::read(
             throw LSST_EXCEPT(ex::RuntimeErrorException, 
                 "Didn't get XmlStorage");
         }
-        xs->getIArchive() & *p;
-    */
+        xs->getIArchive() & boost::serialization::make_nvp("PersisibleSdqaRatingVector", *p);
+*/
 
     } else if (typeid(*storage) == typeid(per::DbStorage) || 
                typeid(*storage) == typeid(per::DbTsvStorage)) {
@@ -509,6 +513,7 @@ std::string const qa::SdqaRatingVectorFormatter::extractSdqaRatingScope(
     std::string sdqaRatingScope = properties->getAsString("sdqaRatingScope");
     return sdqaRatingScope;
 }
+
 
 
 

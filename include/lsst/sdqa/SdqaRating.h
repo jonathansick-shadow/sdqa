@@ -103,6 +103,8 @@ private:
         ar & _parentDbId;
         ar & _metricValue;
         ar & _metricErr;
+        ar & _metricName;
+        ar & _ratingScope;
     }
 
     friend class boost::serialization::access;

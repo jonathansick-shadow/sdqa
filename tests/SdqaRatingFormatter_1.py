@@ -209,10 +209,35 @@ class SdqaRatingTestCase(unittest.TestCase):
             assert s.getName() == self.metricNames[j]
             j += 1
 
+    def testBoostPersistence(self):
+        pol  = dafPolicy.Policy()
+        pers = dafPers.Persistence.getPersistence(pol)
+
+        dp = dafBase.PropertySet()
+        dp.addInt("sliceId", 0)
+        dp.addInt("ampExposureId", 1234)
+        dp.addInt("numSlices", 1)
+        dp.addString("sdqaRatingScope", "AMP")
+
+        loc = dafPers.LogicalLocation("sdqaRating.boost")
+        storage = pers.getPersistStorage("BoostStorage", loc)
+        stl = dafPers.StorageList([storage])
+        pers.persist(self.dsv1, stl, dp)
+
+        # Retrieve it again
+        storage = pers.getRetrieveStorage("BoostStorage", loc)
+        stl = dafPers.StorageList([storage])
+        
+        persistable = pers.unsafeRetrieve("PersistableSdqaRatingVector", stl, dp)
+        res = SDQA.PersistableSdqaRatingVector.swigConvert(persistable)
+
+        print "Check (BoostStorage) ====\n"
+        assert(res == self.dsv1)
+
     def testPersistence(self):
-        pol  = dafPolicy.Policy("/home/rlaher/.lsst/db-auth.paf")
-        dafPers.DbAuth.setPolicy(pol)
         if dafPers.DbAuth.available("lsst10.ncsa.uiuc.edu", "3306"):
+            pol  = dafPolicy.Policy("/home/rlaher/.lsst/db-auth.paf")
+            dafPers.DbAuth.setPolicy(pol)
             pers = dafPers.Persistence.getPersistence(pol)
             loc  = dafPers.LogicalLocation("mysql://lsst10.ncsa.uiuc.edu:3306/russ")
             dp = dafBase.PropertySet()
@@ -229,48 +254,50 @@ class SdqaRatingTestCase(unittest.TestCase):
             persistable = pers.unsafeRetrieve("PersistableSdqaRatingVector", stl, dp)
             res = SDQA.PersistableSdqaRatingVector.swigConvert(persistable)
 
-
             containerSlice = self.dsv1.getSdqaRatings()[0:16]
-            print "put ===="        
+            print "Put (DbStorage) ====\n"        
             j = 0
             for s in containerSlice:
                 print j, "[", s.getName(), "]", s.getValue(), s.getErr(), s.getRatingScope()
                 j += 1
 
             containerSlice2 = res.getSdqaRatings()[0:16]
-            print "get ===="
+            print "Get (DbStorage) ====\n"
             j = 0
             for s2 in containerSlice2:
                 print j, "[", s2.getName(), "]", s2.getValue(), s2.getErr(), s2.getRatingScope()
                 j += 1
 
-            print "end ===="
+            print "Check (DbStorage) ====\n"
 
             for m in xrange(16):
-                print "Comparing metricName for m = ", m, " [", self.dsv1.getSdqaRatings()[m].getName(), "] [", res.getSdqaRatings()[m].getName(), "]" 
+                print "Comparing metricName for m = ", m, " [", self.dsv1.getSdqaRatings()[m].getName(), "] [", res.getSdqaRatings()[m].getName(), "]\n" 
                 a = self.dsv1.getSdqaRatings()[m].getName()
                 b = res.getSdqaRatings()[m].getName()
+
                 if a == b:
                     print "The metricNames are equal.\n"
                 else:
                     print "The metricNames are NOT EQUAL.\n"
-                print "Comparing metricValue for m = ", m, " [", self.dsv1.getSdqaRatings()[m].getValue(), "] [", res.getSdqaRatings()[m].getValue(), "]"
+                print "Comparing metricValue for m = ", m, " [", self.dsv1.getSdqaRatings()[m].getValue(), "] [", res.getSdqaRatings()[m].getValue(), "]\n"
                 a = self.dsv1.getSdqaRatings()[m].getValue()
                 b = res.getSdqaRatings()[m].getValue()
+
                 if a == b:
                     print "The metricValues are equal.\n"
                 else:
                     print "The metricValues are NOT EQUAL.\n"
+
                 assert(self.dsv1.getSdqaRatings()[m].getName()  == res.getSdqaRatings()[m].getName())
                 assert(self.dsv1.getSdqaRatings()[m].getValue() == res.getSdqaRatings()[m].getValue())
                 assert(self.dsv1.getSdqaRatings()[m].getErr()   == res.getSdqaRatings()[m].getErr())
 
-            """The following statement will fail because the returned SDQA Ratings have extra info."""
+            """The following statement will fail as DbStorage-returned SDQA Ratings have extra info."""
             #assert(res == self.dsv1)
 
         else:
 
-            print "skipping database tests"
+            print "Skipping database tests.\n"
 
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
