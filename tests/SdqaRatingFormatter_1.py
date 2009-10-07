@@ -210,10 +210,8 @@ class SdqaRatingTestCase(unittest.TestCase):
             j += 1
 
     def testPersistence(self):
-        pol  = dafPolicy.Policy("/home/rlaher/.lsst/db-auth.paf")
-        dafPers.DbAuth.setPolicy(pol)
         if dafPers.DbAuth.available("lsst10.ncsa.uiuc.edu", "3306"):
-            pers = dafPers.Persistence.getPersistence(pol)
+            pers = dafPers.Persistence.getPersistence(dafPolicy.Policy())
             loc  = dafPers.LogicalLocation("mysql://lsst10.ncsa.uiuc.edu:3306/russ")
             dp = dafBase.PropertySet()
             dp.addInt("sliceId", 0)
