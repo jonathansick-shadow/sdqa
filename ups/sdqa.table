@@ -1,4 +1,4 @@
-setupRequired(daf_persistence >= 3.3.3)
+setupRequired(daf_persistence >= 3.3.4)
 setupRequired(security >= 3.2.2)
 setupRequired(daf_base >= 3.2.3)
 setupRequired(utils >= 3.4.3)
