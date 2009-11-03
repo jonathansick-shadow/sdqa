@@ -219,6 +219,12 @@ class SdqaRatingTestCase(unittest.TestCase):
             dp.addInt("numSlices", 1)
             dp.addString("sdqaRatingScope", "AMP")
 
+            db = dafPers.DbStorage()
+            db.setRetrieveLocation(loc)
+            db.startTransaction()
+            db.executeSql("delete from sdqa_Rating_ForScienceAmpExposure;")
+            db.endTransaction()
+
             stl = dafPers.StorageList()
             stl.append(pers.getPersistStorage("DbStorage", loc))
             pers.persist(self.dsv1, stl, dp)
