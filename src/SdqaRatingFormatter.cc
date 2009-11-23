@@ -242,11 +242,11 @@ void qa::SdqaRatingVectorFormatter::write(
 
 
             /*
-	     * Query the sdqa_Metric database table for all sdqa_metricIds vs. metricName
+             * Query the sdqa_Metric database table for all sdqa_metricIds vs. metricName
              * and store it in a map.
-	     */
+             */
 
-	    std::map<std::string, int, std::less< std::string > > sdqa_metricIds;
+            std::map<std::string, int, std::less< std::string > > sdqa_metricIds;
 
             db->setTableForQuery("sdqa_Metric");
             db->outColumn("sdqa_metricId");
@@ -257,16 +257,16 @@ void qa::SdqaRatingVectorFormatter::write(
                 std::string metricName = db->getColumnByPos<std::string>(1);
                 sdqa_metricIds.insert(std::map<std::string, int, 
                     std::less< std::string > >::value_type(metricName, sdqa_metricId));
-	    }
+            }
             db->finishQuery();
 
 
             /*
-	     * Query the sdqa_Threshold database table for all sdqa_thresholdIds vs. 
-	     * sdqa_metricId and store it in a map.
-	     */
+             * Query the sdqa_Threshold database table for all sdqa_thresholdIds vs. 
+             * sdqa_metricId and store it in a map.
+             */
 
-	    std::map<int, int, std::less< int > > sdqa_thresholdIds;
+            std::map<int, int, std::less< int > > sdqa_thresholdIds;
 
             db->setTableForQuery("sdqa_Threshold");
             db->outColumn("sdqa_metricId");
@@ -277,7 +277,7 @@ void qa::SdqaRatingVectorFormatter::write(
                 int sdqa_thresholdId = db->getColumnByPos<int>(1);
                 sdqa_thresholdIds.insert(std::map<int, int, 
                    std::less< int > >::value_type(sdqa_metricId, sdqa_thresholdId));
-	    }
+            }
             db->finishQuery();
 
 
@@ -287,7 +287,7 @@ void qa::SdqaRatingVectorFormatter::write(
             for ( ; i != sdqaRatingVector.end(); ++i) {
 
                 // Look up the sdqa_metricId given the metricName.
-	        std::string metricName = (*i)->qa::SdqaRating::getName();
+                std::string metricName = (*i)->qa::SdqaRating::getName();
                 int sdqa_metricId = sdqa_metricIds[metricName];
                 (*i)->qa::SdqaRating::setSdqaMetricId(sdqa_metricId);
 
@@ -305,15 +305,15 @@ void qa::SdqaRatingVectorFormatter::write(
 
 
             /*
-	     * Insert rows into the appropriate sdqa_Rating_xxx database table.
-	     */
+             * Insert rows into the appropriate sdqa_Rating_xxx database table.
+             */
 
             db->setTableForInsert(tableName);
 
             qa::SdqaRatingSet::const_iterator j(sdqaRatingVector.begin());
             qa::SdqaRatingSet::const_iterator const end(sdqaRatingVector.end());
             for ( ; j != end; ++j) {
-	      insertRow<per::DbStorage>(*db, **j, columnNameOfImageId);
+                insertRow<per::DbStorage>(*db, **j, columnNameOfImageId);
             }
 
         } else {
@@ -420,11 +420,11 @@ bas::Persistable* qa::SdqaRatingVectorFormatter::read(
 
 
         /*
-	 * Query the sdqa_Metric database table for all metricNames vs. sdqa_metricId
+         * Query the sdqa_Metric database table for all metricNames vs. sdqa_metricId
          * and store it in a map.
-	 */
+         */
 
-	std::map<int, std::string, std::less< int > > metricNames;
+        std::map<int, std::string, std::less< int > > metricNames;
 
         db->setTableForQuery("sdqa_Metric");
         db->outColumn("sdqa_metricId");
@@ -433,14 +433,15 @@ bas::Persistable* qa::SdqaRatingVectorFormatter::read(
         while (db->next()) {
             int sdqa_metricId = db->getColumnByPos<int>(0);
             std::string metricName = db->getColumnByPos<std::string>(1);
-            metricNames.insert(std::map<int, std::string, std::less< int > >::value_type(sdqa_metricId, metricName));
-	}
+            metricNames.insert(std::map<int, std::string, 
+                               std::less<int> >::value_type(sdqa_metricId, metricName));
+        }
         db->finishQuery();
 
 
         /*
-	 * Query the appropriate sdqa_Rating_xxx database table.
-	 */
+         * Query the appropriate sdqa_Rating_xxx database table.
+         */
 
         db->setTableForQuery(tableName);
 
@@ -453,7 +454,7 @@ bas::Persistable* qa::SdqaRatingVectorFormatter::read(
         db->query();
 
         while (db->next()) {
-	    data._metricName = metricNames[data._sdqa_metricId];
+            data._metricName = metricNames[data._sdqa_metricId];
             qa::SdqaRating::Ptr sdqaRatingPtr(new qa::SdqaRating(data));
             sdqaRatingVector.push_back(sdqaRatingPtr);
         }

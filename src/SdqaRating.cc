@@ -11,8 +11,8 @@
  *        of a metricName, metricValue, metricErr, and a database-table flag.
  *
  *        The database-table flag is of data type RatingScope (defined in the
- *        SdqaRating header file), and allowed values are 0, 1, and 2, 
- *        corresponding to amplifier, CCD, or FPA for the image level of the 
+ *        SdqaRating header file), and allowed values are 0, 1, 2 and 3, 
+ *        corresponding to amplifier, CCD, FPA or FOOTPRINT for the image level of the 
  *        SDQA rating, respectively.  An exception is thrown if the flag is 
  *        not an allowed value.
  *
@@ -35,7 +35,7 @@ namespace sdqa = lsst::sdqa;
  * Initializes class attribute _ratingScope to -1, an invalid value.
  * The set function must be subsequently called to set the class
  * attributes, as well as reset _ratingScope to a valid value.  
- * Valid _ratingScope values are 0=Amp, 1=CCD, 2=FPA.
+ * Valid _ratingScope values are 0=Amp, 1=CCD, 2=FPA, and 3=FOOTPRINT.
  */
 
 sdqa::SdqaRating::SdqaRating() : _ratingScope(INVALID), _parentDbId(0) {}
@@ -62,7 +62,7 @@ sdqa::SdqaRating::SdqaRating(SdqaRating const & other) {
  */
 
 sdqa::SdqaRating::SdqaRating(std::string metricName, double metricValue, 
-		       double metricErr, RatingScope ratingScope) {
+                             double metricErr, RatingScope ratingScope) {
     set(metricName, metricValue, metricErr, ratingScope);
 }
 
@@ -91,13 +91,13 @@ sdqa::SdqaRating::~SdqaRating() {}
  */
 
 void sdqa::SdqaRating::set(std::string metricName, double metricValue, 
-		     double metricErr, RatingScope ratingScope) {
+                           double metricErr, RatingScope ratingScope) {
     if (! ((ratingScope == AMP) || 
            (ratingScope == CCD) ||
            (ratingScope == FPA) ||
            (ratingScope == FOOTPRINT))) {
         throw LSST_EXCEPT(lsst::pex::exceptions::InvalidParameterException, 
-      	    "Error: Input ratingScope has invalid value.");
+            "Error: Input ratingScope has invalid value.");
     } else {
         _ratingScope = ratingScope;
         _metricName  = metricName;
@@ -109,7 +109,7 @@ void sdqa::SdqaRating::set(std::string metricName, double metricValue,
 void sdqa::SdqaRating::setParentDbId(boost::int64_t parentDbId) {
     if (parentDbId < 1) {
         throw LSST_EXCEPT(lsst::pex::exceptions::InvalidParameterException, 
-      	    "Error: Input parentDbId must be > zero.");
+            "Error: Input parentDbId must be > zero.");
     } else {
         _parentDbId = parentDbId;
     }
@@ -168,9 +168,9 @@ int sdqa::SdqaRating::getSdqaThresholdId() const {
 sdqa::SdqaRating & sdqa::SdqaRating::operator = (sdqa::SdqaRating const & other) {
     if (&other != this) {
             set(other._metricName, 
-		other._metricValue, 
-		other._metricErr, 
-		other._ratingScope);
+                other._metricValue, 
+                other._metricErr, 
+                other._ratingScope);
     }
     return *this;
 }
@@ -183,9 +183,9 @@ sdqa::SdqaRating & sdqa::SdqaRating::operator = (sdqa::SdqaRating const & other)
 bool sdqa::SdqaRating::operator == (sdqa::SdqaRating const & other) const {
     if (_metricName != other._metricName) {
         return false;
-    } else if (_metricValue != other._metricValue) {
+    } else if (fabs(_metricValue - other._metricValue) > 1.0e-15) {
         return false;
-    } else if (_metricErr != other._metricErr) {
+    } else if (fabs(_metricErr - other._metricErr) > 1.0e-15) {
         return false;
     } else if (_ratingScope != other._ratingScope) {
         return false;

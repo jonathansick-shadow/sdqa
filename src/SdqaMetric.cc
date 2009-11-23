@@ -81,7 +81,7 @@ void sdqa::SdqaMetric::set(int         sdqaMetricId,
     if (! ((dataType == FLOAT) || 
            (dataType == INT))) {
         throw LSST_EXCEPT(lsst::pex::exceptions::InvalidParameterException, 
-      	    "Error: Input dataType has invalid value.");
+            "Error: Input dataType has invalid value.");
     } else {
         _sdqaMetricId  = sdqaMetricId;
         _metricName    = metricName;

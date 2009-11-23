@@ -24,6 +24,7 @@
 
 #include <string>
 #include <vector>
+#include <cmath>
 
 #include "lsst/daf/base/Citizen.h"
 #include "lsst/daf/base/Persistable.h"

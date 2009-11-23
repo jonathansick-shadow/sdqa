@@ -10,6 +10,10 @@
  * \author Russ Laher, IPAC
  */
 
+#ifndef BOOST_TEST_MODULE
+#define BOOST_TEST_MODULE SdqaThreshold_1 
+#endif // BOOST_TEST_MODULE
+
 #include <iostream>
 #include <string>
 using std::cout;
@@ -18,19 +22,16 @@ using std::string;
 
 #include "lsst/sdqa/SdqaThreshold.h"
 
-namespace sdqa = lsst::sdqa;
-
-#define BOOST_TEST_MODULE SdqaThreshold_1
 #include "boost/test/included/unit_test.hpp"
 #include "boost/test/output_test_stream.hpp"
-
 #include "boost/format.hpp"
 
+namespace sdqa = lsst::sdqa;
 namespace testSdqaThreshold = boost::test_tools;
 
-BOOST_AUTO_TEST_SUITE(SdqaThresholdSuite)
+BOOST_AUTO_TEST_SUITE(SdqaThresholdSuite) /* parasoft-suppress LsstDm-3-6a  LsstDm-3-2c LsstDm-4-6 "Macro expands to non-LSST code" */
 
-BOOST_AUTO_TEST_CASE(test1) {
+BOOST_AUTO_TEST_CASE(test1) { /* parasoft-suppress LsstDm-3-1 LsstDm-5-25 LsstDm-4-6 "Macro expands to non-LSST code" */
     int i1 = 1234;
     int j1 = 5678;
     double u1 = 1.234;
@@ -50,7 +51,7 @@ BOOST_AUTO_TEST_CASE(test1) {
     BOOST_CHECK_EQUAL(c1, rc1);
 }
 
-BOOST_AUTO_TEST_CASE(test2) {
+BOOST_AUTO_TEST_CASE(test2) { /* parasoft-suppress LsstDm-3-1 LsstDm-5-25 LsstDm-4-6 "Macro expands to non-LSST code" */
     int i2 = 5555;
     int j2 = 7777;
     double u2 = 5.555;
