@@ -29,7 +29,8 @@ class SdqaMetricTestCase(unittest.TestCase):
         self.assertEqual(sm.getName(), "img.stat.stdDev")
         self.assertEqual(sm.getPhysicalUnits(), "MJy/sr")
         self.assertEqual(sm.getDataType(), sdqa.SdqaMetric.FLOAT)
-        self.assertEqual(sm.getDefinition(), "This is the time for all good men to come to the aid of their country.")
+        self.assertEqual(sm.getDefinition(), 
+                         "This is the time for all good men to come to the aid of their country.")
 
     def testInt(self):
         n = 111

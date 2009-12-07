@@ -16,15 +16,16 @@
 
 #include <iostream>
 #include <string>
-using std::cout;
-using std::endl;
-using std::string;
 
 #include "lsst/sdqa/SdqaThreshold.h"
 
 #include "boost/test/included/unit_test.hpp"
 #include "boost/test/output_test_stream.hpp"
 #include "boost/format.hpp"
+
+using std::cout;
+using std::endl;
+using std::string;
 
 namespace sdqa = lsst::sdqa;
 namespace testSdqaThreshold = boost::test_tools;
