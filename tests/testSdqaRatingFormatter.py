@@ -81,10 +81,7 @@ database: {
 }
 
 """
-import pdb
 import unittest
-import random
-import time
 
 import lsst.daf.base as dafBase
 import lsst.pex.policy as dafPolicy
@@ -251,26 +248,21 @@ class SdqaRatingTestCase(unittest.TestCase):
             print "end ===="
 
             for m in xrange(16):
-                print "Comparing metricName for m = ", m, " [", self.dsv1.getSdqaRatings()[m].getName(), "] [", res.getSdqaRatings()[m].getName(), "]" 
-                a = self.dsv1.getSdqaRatings()[m].getName()
-                b = res.getSdqaRatings()[m].getName()
-                if a == b:
+                print "Comparing metricName for m = ", m, " [", \
+                      self.dsv1.getSdqaRatings()[m].getName(), "] [", res.getSdqaRatings()[m].getName(), "]" 
+                if self.dsv1.getSdqaRatings()[m].getName() == res.getSdqaRatings()[m].getName():
                     print "The metricNames are equal.\n"
                 else:
                     print "The metricNames are NOT EQUAL.\n"
-                print "Comparing metricValue for m = ", m, " [", self.dsv1.getSdqaRatings()[m].getValue(), "] [", res.getSdqaRatings()[m].getValue(), "]"
-                a = self.dsv1.getSdqaRatings()[m].getValue()
-                b = res.getSdqaRatings()[m].getValue()
-                if a == b:
+                print "Comparing metricValue for m = ", m, " [", \
+                      self.dsv1.getSdqaRatings()[m].getValue(), "] [", res.getSdqaRatings()[m].getValue(), "]"
+                if self.dsv1.getSdqaRatings()[m].getValue() == res.getSdqaRatings()[m].getValue():
                     print "The metricValues are equal.\n"
                 else:
                     print "The metricValues are NOT EQUAL.\n"
                 assert(self.dsv1.getSdqaRatings()[m].getName()  == res.getSdqaRatings()[m].getName())
                 assert(self.dsv1.getSdqaRatings()[m].getValue() == res.getSdqaRatings()[m].getValue())
                 assert(self.dsv1.getSdqaRatings()[m].getErr()   == res.getSdqaRatings()[m].getErr())
-
-            """The following statement will fail because the returned SDQA Ratings have extra info."""
-            #assert(res == self.dsv1)
 
         else:
 

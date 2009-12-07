@@ -2,11 +2,11 @@
 Import("env")
 import glob
 
-env.Program(["SdqaMetric_1.cc"], LIBS=env.getlibs(env["eups_product"]))
-env.Program(["SdqaThreshold_1.cc"], LIBS=env.getlibs(env["eups_product"]))
-env.Program(["SdqaRating_1.cc"], LIBS=env.getlibs(env["eups_product"]))
-env.Program(["SdqaRatingSet_1.cc"], LIBS=env.getlibs(env["eups_product"]))
-env.Program(["SdqaImageStatus_1.cc"], LIBS=env.getlibs(env["eups_product"]))
+env.Program(["testSdqaMetric.cc"], LIBS=env.getlibs(env["eups_product"]))
+env.Program(["testSdqaThreshold.cc"], LIBS=env.getlibs(env["eups_product"]))
+env.Program(["testSdqaRating.cc"], LIBS=env.getlibs(env["eups_product"]))
+env.Program(["testSdqaRatingSet.cc"], LIBS=env.getlibs(env["eups_product"]))
+env.Program(["testSdqaImageStatus.cc"], LIBS=env.getlibs(env["eups_product"]))
 
 #
 # Tests
