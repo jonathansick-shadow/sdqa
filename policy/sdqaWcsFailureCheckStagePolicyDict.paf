@@ -1,0 +1,68 @@
+#<?cfg paf dictionary ?>  
+# 
+# Policy dictionary for SdqaWcsFailureCheckStage.  
+# 
+target:  SdqaWcsCheckFailureStage
+definitions: {
+    minMatches: {
+        type:  int
+        default:  20
+        minOccurs:  1
+        maxOccurs:  1
+        allowed: {
+            min: 10
+            max: 100
+        }
+        description:  "the minimum number of matches between extracted sources
+                       and astrometric-reference sources."
+    }
+
+    maxRmsRadDist: {
+        type:  double
+        default:  1.5
+        minOccurs: 1
+        maxOccurs:  1
+        allowed: {
+            min: 0.1
+            max: 5.0
+        }
+        description:  "the maximum allowed root-mean-squared radial distance
+                     computed for matches between extracted sources and
+                     astrometric-reference sources (arcseconds)."
+    }
+    matchRadius: {
+        type:  double
+        default:  5.0
+        minOccurs: 1
+        maxOccurs:  1
+        allowed: {
+            min: 0.1
+            max: 10.0
+        }
+        description:  "the maximum allowed radius for matches between extracted 
+                       sources and astrometric-reference sources (arcseconds)."
+    }
+    minStellarity: {
+        type:  double
+        default:  0.85
+        minOccurs: 1
+        maxOccurs:  1
+        allowed: {
+            min: 0.5
+            max: 0.95
+        }
+        description:  "the minimum stellarity for selection of extracted sources (dimensionless)."
+    }
+    nLocalBkgSigma: {
+        type:  int
+        default:  4
+        minOccurs:  1
+        maxOccurs:  1
+        allowed: {
+            min: 3
+            max: 6
+        }
+        description:  "number of standard deviations above background required of peak pixel
+                       in source extraction, for selection of extracted sources (dimensionless)."
+    }
+}
