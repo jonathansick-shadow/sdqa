@@ -1,4 +1,4 @@
-#! /usr/bin/env python -tt
+#! /usr/bin/env python 
 """SDQA independent check for WCS failure.
 """
 from __future__ import with_statement
@@ -30,13 +30,13 @@ class SdqaWcsFailureCheckStageParallel(harnessStage.ParallelProcessing):
                                 of peak pixel in source extraction, for selection of 
                                 extracted sources; dimensionless)
             Clipboard:
-                ccdExposureId
-                Set of extracted sources (sources extracted from CCD image)
+                ccdExposureId (ccdMetadataKey.ccdExposureId)
+                Set of extracted sources from CCD image (extractedSourceSetKey)
             Database:
                 Set of astrometric-reference sources.
 
         Outputs:
-            Clipboard (astromVerifSdqaRatings):
+            Clipboard (astromVerifSdqaRatingsKey):
                 SDQA ratings to be persisted in database:
                     Number of matches (nAstromVerifMatches)
                     RMS radial distance (astromVerifRmsRadDist)   
@@ -92,7 +92,7 @@ class SdqaWcsFailureCheckStageParallel(harnessStage.ParallelProcessing):
         """
         defaults = pexPolicy.DefaultPolicyFile("sdqa",  
                                                "sdqaWcsFailureCheckStagePolicyDict.paf", 
-                                               "pipeline"
+                                               "policy"
                                               )
         defPolicy = pexPolicy.Policy.createPolicy(defaults, defaults.getRepositoryPath())
         if self.policy is None:
@@ -100,11 +100,14 @@ class SdqaWcsFailureCheckStageParallel(harnessStage.ParallelProcessing):
         else:
             self.policy.mergeDefaults(defPolicy)
 
-        self.minMatches = self.policy.get("minMatches")
-        self.maxRmsRadDist = self.policy.get("maxRmsRadDist")
-        self.matchRadius = self.policy.get("matchRadius")
-        self.minStellarity = self.policy.get("minStellarity")
-        self.nLocalBkgSigma = self.policy.get("nLocalBkgSigma")
+        self.minMatches = self.policy.get("parameters.minMatches")
+        self.maxRmsRadDist = self.policy.get("parameters.maxRmsRadDist")
+        self.matchRadius = self.policy.get("parameters.matchRadius")
+        self.minStellarity = self.policy.get("parameters.minStellarity")
+        self.nLocalBkgSigma = self.policy.get("parameters.nLocalBkgSigma")
+        self.ccdMetadataKey = self.policy.get("inputKeys.ccdMetadataKey")
+        self.extractedSourceSetKey = self.policy.get("inputKeys.extractedSourceSetKey")
+        self.astromVerifSdqaRatingsKey = self.policy.get("outputKeys.astromVerifSdqaRatingsKey")
 
         self.log = Debug(self.log, "SdqaWcsFailureCheckStage")
         self.log.log(Log.INFO, "Minimum number of matches required: %i"% self.minMatches)
@@ -112,22 +115,29 @@ class SdqaWcsFailureCheckStageParallel(harnessStage.ParallelProcessing):
         self.log.log(Log.INFO, "Match radius: %f"% self.matchRadius)
         self.log.log(Log.INFO, "Required minimum stellarity for extracted sources: %f"% self.minStellarity)
         self.log.log(Log.INFO, "N local background sigma: %f"% self.nLocalBkgSigma)
+        self.log.log(Log.INFO, "Clipboard name of ccdMetadata: %s"% self.ccdMetadataKey)
+        self.log.log(Log.INFO, "Clipboard name of extractedSources: %s"% self.extractedSourceSetKey)
+        self.log.log(Log.INFO, \
+                     "Clipboard name of astromVerifSdqaRatings: %s"% self.astromVerifSdqaRatingsKey)
 
         self.log.debug(3, "Running with sliceID = %s" % self.getRank())
 
     def process(self, clipboard):
 
         if clipboard is not None:
-            if not clipboard.contains("extractedSources"):
-                raise RuntimeError("Missing extractedSources on clipboard")
-            if not clipboard.contains("ccdMetadata"):
+            if not clipboard.contains(self.extractedSourceSetKey):
+                raise RuntimeError("Missing extractedSourceSet on clipboard")
+            if not clipboard.contains(self.ccdMetadataKey):
                 raise RuntimeError("Missing ccdMetadata on clipboard")
 
-        propertySet = clipboard.get("ccdMetadata")
-        ccdExposureId = propertySet.getAsInt64("ccdExposureId")
-        extractedSources = clipboard.get("extractedSources")
+        propertySet = clipboard.get(self.ccdMetadataKey)
+        ccdExposureId = propertySet.getInt("ccdExposureId")
 
-        self.log.debug(3, "ccdExposureId = %s" % ccdExposureId)
+        extractedSourceSet = clipboard.get("extractedSourceSetKey")
+
+        self.log.log(Log.INFO, "ccdExposureId = %s"% ccdExposureId)
+
+        self.log.debug(3, "ccdExposureId = %s"% ccdExposureId)
 
         if self.log.sends(Log.DEBUG):
             LogRec(self.log, Log.DEBUG) << "All input data found."           \
@@ -143,15 +153,18 @@ class SdqaWcsFailureCheckStageParallel(harnessStage.ParallelProcessing):
         # Match extracted sources with reference sources.
         # Compute radial root-mean-squared (RMS) radial distance of the matches, in arcseconds.
         # E.g., the results are
-        nMatches = 45
-        rmsRadDist = 0.4
+        nMatches = 456789
+        rmsRadDist = 0.456789
 
         # Put SDQA ratings on clipboard.
         sdqaRatings = sdqa.SdqaRatingSet()
-        sdqaRatings.append(sdqa.SdqaRating("nAstromVerifMatches", nMatches,  0, sdqa.SdqaRating.CCD))
-        sdqaRatings.append(sdqa.SdqaRating("astromVerifRmsRadDist", rmsRadDist,  0.0, sdqa.SdqaRating.CCD))
+        sdqaRatings.append(sdqa.SdqaRating("nAstromVerifMatches", \
+                                            nMatches,  0, sdqa.SdqaRating.CCD))
+        sdqaRatings.append(sdqa.SdqaRating("astromVerifRmsRadDist", \
+                                            rmsRadDist,  0.0, sdqa.SdqaRating.CCD))
+
         persistableSdqaRatingVector = sdqa.PersistableSdqaRatingVector(sdqaRatings)
-        clipboard.put("astromVerifSdqaRatings", persistableSdqaRatingVector)
+        clipboard.put(self.astromVerifSdqaRatingsKey, persistableSdqaRatingVector)
 
         if self.log.sends(Log.DEBUG):
             LogRec(self.log, Log.DEBUG) << "Astrometric-verification results:" \
@@ -161,9 +174,9 @@ class SdqaWcsFailureCheckStageParallel(harnessStage.ParallelProcessing):
                                         << LogRec.endr
 
         # Raise exceptions if tests fail.
-        if nMatches < minMatches:
+        if nMatches < self.minMatches:
             raise pexExcept.exceptionsLib.LsstCppException
-        if rmsRadDist > maxRmsRadDist:
+        if rmsRadDist > self.maxRmsRadDist:
             raise pexExcept.exceptionsLib.LsstCppException
 
 
