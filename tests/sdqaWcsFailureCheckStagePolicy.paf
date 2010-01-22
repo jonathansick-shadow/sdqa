@@ -1,0 +1,19 @@
+#<? cfg paf policy ?>
+# 
+
+SdqaWcsFailureCheckStage: {
+    inputKeys: {
+        ccdMetadataKey: "ccdMetadataKey"
+        extractedSourceSetKey: "extractedSourceSetKey"
+    }
+    outputKeys: {
+        astromVerifSdqaRatingsKey: "astromVerifSdqaRatingsKey" 
+    }
+    parameters: {
+        minMatches: 11
+        maxRmsRadDist: 1.1
+        matchRadius: 9.1
+        minStellarity: 0.87
+        nLocalBkgSigma: 5
+    }
+}

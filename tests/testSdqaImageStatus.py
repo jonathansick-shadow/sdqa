@@ -2,7 +2,7 @@
 
 import unittest
 
-import lsst.sdqa as sdqa
+import lsst.sdqa.sdqaLib as sdqa
 
 class SdqaImageStatusTestCase(unittest.TestCase):
     """A test case for SdqaImageStatus."""
