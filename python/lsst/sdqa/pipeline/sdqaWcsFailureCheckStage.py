@@ -5,17 +5,17 @@ from __future__ import with_statement
 import lsst.pex.harness.stage as harnessStage
 import lsst.pex.policy as pexPolicy
 from lsst.pex.logging import Log, Debug, LogRec, Prop
-from lsst.pex.exceptions import LsstCppException
+import lsst.pex.exceptions.exceptionsLib as pexExcept
 import lsst.afw.image.imageLib as afwImage
+import lsst.afw.detection as afwDetect
 import lsst.sdqa.sdqaLib as sdqa
-import lsst.daf.base as dafBase
-#TODO: import extractedSources class
+
 
 class SdqaWcsFailureCheckStageParallel(harnessStage.ParallelProcessing):
     """ SdqaWcsFailureCheckStage:
 
         Inputs:
-            Policy:
+            Policy (parameters.*):
                 minMatches (mininum required number of matches between                                       
                             extracted and astrometric-reference sources)
                 maxRmsRadDist (maximum allowed RMS radial distance between
@@ -31,12 +31,11 @@ class SdqaWcsFailureCheckStageParallel(harnessStage.ParallelProcessing):
                                 extracted sources; dimensionless)
             Clipboard:
                 ccdExposureId (ccdMetadataKey.ccdExposureId)
-                Set of extracted sources from CCD image (extractedSourceSetKey)
-            Database:
-                Set of astrometric-reference sources.
+                Set of extracted sources from CCD image (inputKeys.extractedSourceSetKey)
+                Set of astrometric-reference sources (inputKeys.refCatSourceSetKey)
 
         Outputs:
-            Clipboard (astromVerifSdqaRatingsKey):
+            Clipboard (outputKeys.astromVerifSdqaRatingsKey):
                 SDQA ratings to be persisted in database:
                     Number of matches (nAstromVerifMatches)
                     RMS radial distance (astromVerifRmsRadDist)   
@@ -50,8 +49,10 @@ class SdqaWcsFailureCheckStageParallel(harnessStage.ParallelProcessing):
                e. Very low proper motion
                f. Non-diffraction-spike origin (in case of USNOB1 catalog)
                g. Optical band appropriate for image data
-            2. List of reference sources is not necessarily sorted by R.A. (sorted is preferrable).
-            3. Reference sources are packaged as afw.image.Point objects.
+            2. List of reference sources sorted by R.A. is preferable (but not required).
+            3. Reference sources are packaged in lsst.afw.detection.SourceSet object.
+            4. List of extracted sources sorted by R.A. is preferable (but not required).
+            5. Extracted sources are packaged in lsst.afw.detection.SourceSet object.
 
         Attributes of extracted sources:
             R.A. (degrees)
@@ -59,7 +60,7 @@ class SdqaWcsFailureCheckStageParallel(harnessStage.ParallelProcessing):
             Peak pixel (D.N.; e.g., SExtractor MU_MAX divided by pixel area in arcseconds^2)
             Stellarity (dimensionless value between 0 and 1)
             Local background (D.N.)
-            Local background standard deviation (D.N.; e.g., derivable from SExtractor MU_THRESHOLD et al.)
+            Local background standard deviation (D.N.; e.g., derivable from SExtractor MU_THRESHOLD etc.)
             Confusion flag (e.g., SExtractor bits 0 and 1)
             Saturated flag (e.g., SExtractor bit 2)
             Image-edge flag (e.g., SExtractor bit 3)
@@ -71,7 +72,7 @@ class SdqaWcsFailureCheckStageParallel(harnessStage.ParallelProcessing):
 
         Selection criteria for extracted sources:
             Stellarity > minStellarity
-            Flag = 0 (i.e., no confusion, saturation, edge effects, or corruption)
+            Flags = 0 (i.e., no confusion, saturation, edge effects, or corruption)
             Peak > threshold (= local background plus nLocalBkgSigma times local background std. dev.)
 
         Processing flow:
@@ -107,6 +108,7 @@ class SdqaWcsFailureCheckStageParallel(harnessStage.ParallelProcessing):
         self.nLocalBkgSigma = self.policy.get("parameters.nLocalBkgSigma")
         self.ccdMetadataKey = self.policy.get("inputKeys.ccdMetadataKey")
         self.extractedSourceSetKey = self.policy.get("inputKeys.extractedSourceSetKey")
+        self.refCatSourceSetKey = self.policy.get("inputKeys.refCatSourceSetKey")
         self.astromVerifSdqaRatingsKey = self.policy.get("outputKeys.astromVerifSdqaRatingsKey")
 
         self.log = Debug(self.log, "SdqaWcsFailureCheckStage")
@@ -116,7 +118,8 @@ class SdqaWcsFailureCheckStageParallel(harnessStage.ParallelProcessing):
         self.log.log(Log.INFO, "Required minimum stellarity for extracted sources: %f"% self.minStellarity)
         self.log.log(Log.INFO, "N local background sigma: %f"% self.nLocalBkgSigma)
         self.log.log(Log.INFO, "Clipboard name of ccdMetadata: %s"% self.ccdMetadataKey)
-        self.log.log(Log.INFO, "Clipboard name of extractedSources: %s"% self.extractedSourceSetKey)
+        self.log.log(Log.INFO, "Clipboard name of extractedSourceSet: %s"% self.extractedSourceSetKey)
+        self.log.log(Log.INFO, "Clipboard name of refCatSourceSet: %s"% self.refCatSourceSetKey)
         self.log.log(Log.INFO, \
                      "Clipboard name of astromVerifSdqaRatings: %s"% self.astromVerifSdqaRatingsKey)
 
@@ -127,13 +130,17 @@ class SdqaWcsFailureCheckStageParallel(harnessStage.ParallelProcessing):
         if clipboard is not None:
             if not clipboard.contains(self.extractedSourceSetKey):
                 raise RuntimeError("Missing extractedSourceSet on clipboard")
+            if not clipboard.contains(self.refCatSourceSetKey):
+                raise RuntimeError("Missing refCatSourceSet on clipboard")
             if not clipboard.contains(self.ccdMetadataKey):
                 raise RuntimeError("Missing ccdMetadata on clipboard")
 
         propertySet = clipboard.get(self.ccdMetadataKey)
         ccdExposureId = propertySet.getInt("ccdExposureId")
 
-        extractedSourceSet = clipboard.get("extractedSourceSetKey")
+        extractedSourceSet = clipboard.get(self.extractedSourceSetKey)
+
+        refCatSourceSet = clipboard.get(self.refCatSourceSetKey)
 
         self.log.log(Log.INFO, "ccdExposureId = %s"% ccdExposureId)
 
@@ -141,7 +148,7 @@ class SdqaWcsFailureCheckStageParallel(harnessStage.ParallelProcessing):
 
         if self.log.sends(Log.DEBUG):
             LogRec(self.log, Log.DEBUG) << "All input data found."           \
-                             << Prop("Number of extracted-source positions", len(extractedSources))   \
+                             << Prop("Number of extracted-source positions", len(extractedSourceSet))   \
                              << LogRec.endr
 
         # Do the work.
@@ -153,8 +160,21 @@ class SdqaWcsFailureCheckStageParallel(harnessStage.ParallelProcessing):
         # Match extracted sources with reference sources.
         # Compute radial root-mean-squared (RMS) radial distance of the matches, in arcseconds.
         # E.g., the results are
-        nMatches = 456789
+        # nMatches = 456789
         rmsRadDist = 0.456789
+
+        sourceMatches = afwDetect.matchRaDec(extractedSourceSet, refCatSourceSet, self.matchRadius)
+        nMatches = len(sourceMatches)
+
+        for i in range(nMatches):
+            print "Matches: ", \
+                  sourceMatches[i][0].getRa(), \
+                  sourceMatches[i][0].getDec(), \
+                  sourceMatches[i][1].getRa(), \
+                  sourceMatches[i][1].getDec()
+  
+        self.log.log(Log.INFO, "Number of matches: %i"% nMatches)
+        self.log.log(Log.INFO, "RMS radial distance: %f"% rmsRadDist)
 
         # Put SDQA ratings on clipboard.
         sdqaRatings = sdqa.SdqaRatingSet()
@@ -175,9 +195,9 @@ class SdqaWcsFailureCheckStageParallel(harnessStage.ParallelProcessing):
 
         # Raise exceptions if tests fail.
         if nMatches < self.minMatches:
-            raise pexExcept.exceptionsLib.LsstCppException
+            raise pexExcept.LsstCppException("asdf")
         if rmsRadDist > self.maxRmsRadDist:
-            raise pexExcept.exceptionsLib.LsstCppException
+            raise pexExcept.LsstCppException
 
 
 # Required with SimpleStageTester.

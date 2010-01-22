@@ -27,13 +27,19 @@ class SdqaWcsFailureCheckStageTestCase(unittest.TestCase):
 
     def setUp(self):
         self.ss1 = afwDetect.SourceSet()
-        nobj = 100
+        self.ss2 = afwDetect.SourceSet()
+        nobj = 30
         for i in range(nobj):
-            s = afwDetect.Source()
-            s.setId(i)
-            s.setRa(10 + 0.001*i)
-            s.setDec(10 + 0.001*i)
-            self.ss1.append(s)
+            s1 = afwDetect.Source()
+            s1.setId(i)
+            s1.setRa(10 + 0.001*i)
+            s1.setDec(10 + 0.001*i)
+            self.ss1.append(s1)
+            s2 = afwDetect.Source()
+            s2.setId(i)
+            s2.setRa(10 + 0.001001*i)
+            s2.setDec(10 + 0.001001*i)
+            self.ss2.append(s2)
 
     def tearDown(self):
         pass
@@ -55,7 +61,15 @@ class SdqaWcsFailureCheckStageTestCase(unittest.TestCase):
         extractedSourceSetKey = policy.get("SdqaWcsFailureCheckStage.inputKeys.extractedSourceSetKey")
         clipboard.put(extractedSourceSetKey, self.ss1)
 
+        refCatSourceSetKey = policy.get("SdqaWcsFailureCheckStage.inputKeys.refCatSourceSetKey")
+        clipboard.put(refCatSourceSetKey, self.ss2)
+
         tester.runWorker(clipboard)
+
+        matchRadius = policy.get("SdqaWcsFailureCheckStage.parameters.matchRadius")
+        mat = afwDetect.matchRaDec(self.ss1, self.ss2, matchRadius)
+        print "Input matchRadius = ", matchRadius
+        print "Input number of matches = ", len(mat)
 
         res = clipboard.get(policy.get("SdqaWcsFailureCheckStage.outputKeys.astromVerifSdqaRatingsKey"))
 
@@ -67,7 +81,7 @@ class SdqaWcsFailureCheckStageTestCase(unittest.TestCase):
             j += 1
 
         assert(res.getSdqaRatings()[0].getName()  == "nAstromVerifMatches")
-        assert(res.getSdqaRatings()[0].getValue() == 456789)
+        assert(res.getSdqaRatings()[0].getValue() == len(mat))
         assert(res.getSdqaRatings()[0].getErr()   == 0.0)
         assert(res.getSdqaRatings()[0].getRatingScope() == 1)
 

@@ -24,6 +24,13 @@ definitions: {
                     maxOccurs: 1
                     default: extractedSourceSetKey
                 }
+                refCatSourceSetKey: {
+                    type: string
+                    description: "name of clipboard keyword for set of reference-catalog sources."
+                    minOccurs: 1
+                    maxOccurs: 1
+                    default: refCatSourceSetKey
+                }
             }
         }
     }
