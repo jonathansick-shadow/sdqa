@@ -5,6 +5,7 @@ SdqaWcsFailureCheckStage: {
     inputKeys: {
         ccdMetadataKey: "ccdMetadataKey"
         extractedSourceSetKey: "extractedSourceSetKey"
+        refCatSourceSetKey: "refCatSourceSetKey"
     }
     outputKeys: {
         astromVerifSdqaRatingsKey: "astromVerifSdqaRatingsKey" 
