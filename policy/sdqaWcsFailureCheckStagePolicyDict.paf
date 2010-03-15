@@ -55,30 +55,30 @@ definitions: {
         dictionary: {
             target: Parameters
             definitions: {
-            minMatches: {
-                type: int
-                default: 20
-                minOccurs: 1
-                maxOccurs: 1
-                allowed: {
-                    min: 10
-                    max: 100
-                }
-                description:  "the minimum number of matches between extracted sources
+                minMatches: {
+                    type: int
+                    default: 20
+                    minOccurs: 1
+                    maxOccurs: 1
+                    allowed: {
+                        min: 10
+                        max: 100
+                    }
+                    description:  "the minimum number of matches between extracted sources
                                and astrometric-reference sources."
-            }
-            maxRmsRadDist: {
-                type:  double
-                default:  1.5
-                minOccurs: 1
-                maxOccurs:  1
-                allowed: {
-                    min: 0.1
-                    max: 5.0
                 }
-                description:  "the maximum allowed root-mean-squared radial distance
-                               computed for matches between extracted sources and
-                               astrometric-reference sources (arcseconds)."
+                maxRmsRadDist: {
+                    type:  double
+                    default:  1.5
+                    minOccurs: 1
+                    maxOccurs:  1
+                    allowed: {
+                        min: 0.1
+                        max: 5.0
+                    }
+                    description:  "the maximum allowed root-mean-squared radial distance
+                                   computed for matches between extracted sources and
+                                   astrometric-reference sources (arcseconds)."
                 }
                 matchRadius: {
                     type:  double
