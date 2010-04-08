@@ -28,7 +28,7 @@ class IsrSdqaStageParallel(harnessStage.ParallelProcessing):
         """Configure this stage with a policy and then log the set-up information.
         """
         defaults = pexPolicy.DefaultPolicyFile("sdqa",  
-                                               "isrSdqaStagePolicyDict.paf", 
+                                               "isrSdqaStageDictionary.paf", 
                                                "policy"
                                               )
         defPolicy = pexPolicy.Policy.createPolicy(defaults, defaults.getRepositoryPath())
