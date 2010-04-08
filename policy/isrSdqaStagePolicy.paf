@@ -3,7 +3,7 @@
 
 IsrSdqaStage: {
     inputKeys: {
-        exposureKey: "assembledExposure"
+        exposureKey: "isrExposure"
         nBadCalibPixKey: "nBadCalibPix"
         nSaturatePixKey: "nSaturatePix"
         overscanMeanKey: "overscanMean"

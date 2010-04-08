@@ -16,7 +16,7 @@ definitions: {
                     description: "Name of clipboard keyword for exposure."
                     minOccurs: 1
                     maxOccurs: 1
-                    default: "assembledExposure"
+                    default: "isrExposure"
                 }        
                 nBadCalibPixKey: {
                     type: "string"
