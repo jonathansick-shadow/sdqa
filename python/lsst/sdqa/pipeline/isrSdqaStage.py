@@ -64,33 +64,13 @@ class IsrSdqaStageParallel(harnessStage.ParallelProcessing):
         if clipboard is not None:
             if not clipboard.contains(self.exposureKey):
                 raise RuntimeError("Missing exposure on clipboard")
-            if not clipboard.contains(self.nBadCalibPixKey):
-                raise RuntimeError("Missing nBadCalibPix on clipboard")
-            if not clipboard.contains(self.nSaturatePixKey):
-                raise RuntimeError("Missing nSaturatePix on clipboard")
-            if not clipboard.contains(self.overscanMeanKey):
-                raise RuntimeError("Missing overscanMean on clipboard")
-            if not clipboard.contains(self.overscanMeanUncKey):
-                raise RuntimeError("Missing overscanMeanUnc on clipboard")
-            if not clipboard.contains(self.overscanStdDevKey):
-                raise RuntimeError("Missing overscanStdDev on clipboard")
-            if not clipboard.contains(self.overscanMedianKey):
-                raise RuntimeError("Missing overscanMedian on clipboard")
-            if not clipboard.contains(self.imageMedianKey):
-                raise RuntimeError("Missing imageMedian on clipboard")
-            if not clipboard.contains(self.imageMinKey):
-                raise RuntimeError("Missing imageMin on clipboard")
-            if not clipboard.contains(self.imageMaxKey):
-                raise RuntimeError("Missing imageMax on clipboard")
-            if not clipboard.contains(self.xImageGradientKey):
-                raise RuntimeError("Missing xImageGradient on clipboard")
-            if not clipboard.contains(self. yImageGradientKey):
-                raise RuntimeError("Missing  yImageGradient on clipboard")
-            if not clipboard.contains(self.isrPersistableSdqaRatingVectorKey):
-                raise RuntimeError("Missing isrPersistableSdqaRatingVector on clipboard")
 
         exposure = clipboard.get(self.exposureKey)
         propertySet = exposure.getMetadata()
+
+        if not propertySet.contains(self.nBadCalibPixKey):
+            raise RuntimeError("Missing nBadCalibPix in propertySet")
+
         nBadCalibPix = propertySet.getAsDouble(self.nBadCalibPixKey)
         nSaturatePix = propertySet.getAsDouble(self.nSaturatePixKey)
         overscanMean = propertySet.getAsDouble(self.overscanMeanKey)
