@@ -63,7 +63,7 @@ class IsrSdqaStageTestCase(unittest.TestCase):
         yImageGradientKey = policy.get("IsrSdqaStage.inputKeys.yImageGradientKey")
 
         exposure = afwImage.ExposureF()
-        metadata = afwImage.Metadata()
+        metadata = exposure.getMetadata()
         metadata.setDouble(nBadCalibPixKey, self.nBadCalibPix)
         metadata.setDouble(nSaturatePixKey, self.nSaturatePix)
         metadata.setDouble(overscanMeanKey, self.overscanMean)
@@ -84,7 +84,7 @@ class IsrSdqaStageTestCase(unittest.TestCase):
 
         res = clipboard.get(policy.get("IsrSdqaStage.outputKeys.isrPersistableSdqaRatingVectorKey"))
 
-        sdqaRatingScope = policy.get("parameters.sdqaRatingScope")
+        sdqaRatingScope = policy.get("IsrSdqaStage.parameters.sdqaRatingScope")
 
         containerSlice2 = res.getSdqaRatings()[0:10]
         print "get ====="
