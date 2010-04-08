@@ -1,0 +1,20 @@
+#<?cfg paf policy ?>
+
+OutputItems: {
+    isrPersistableSdqaRatingVector: {
+        StoragePolicy: {
+            Storage: "DbStorage"
+            Location: "%(dbUrl)"
+        }
+    }
+}
+
+Persistence: {
+    Formatter: {
+        PersistableSdqaRatingVector: {
+            isrPersistableSdqaRatingVector: {
+                tableName: "sdqa_Rating_ForScienceAmpExposure"
+            }
+        }
+    }
+}
