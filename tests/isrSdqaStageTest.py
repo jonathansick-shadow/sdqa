@@ -119,7 +119,7 @@ class IsrSdqaStageTestCase(unittest.TestCase):
 
         i = 4
         assert(res.getSdqaRatings()[i].getName()  == overscanMedianKey)
-        assert(res.getSdqaRatings()[i].getValue() == self.noverscanMedian)
+        assert(res.getSdqaRatings()[i].getValue() == self.overscanMedian)
         assert(res.getSdqaRatings()[i].getErr()   == 0.0)
         assert(res.getSdqaRatings()[i].getRatingScope() == sdqaRatingScope)
 
