@@ -9,7 +9,7 @@ import lsst.pex.exceptions.exceptionsLib as pexExcept
 import lsst.sdqa.sdqaLib as sdqa
 
 
-class SdqaWcsFailureCheckStageParallel(harnessStage.ParallelProcessing):
+class IsrSdqaStageParallel(harnessStage.ParallelProcessing):
     """ IsrSdqaStage:
 
         Inputs:
