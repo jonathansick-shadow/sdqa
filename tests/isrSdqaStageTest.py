@@ -21,8 +21,8 @@ import lsst.sdqa.sdqaLib as sdqa
 import lsst.sdqa.pipeline as sdqaPipe
 import lsst.afw.image as afwImage
 
-class IrsSdqaStageTestCase(unittest.TestCase):
-    """A test case for IrsSdqaStage.py"""
+class IsrSdqaStageTestCase(unittest.TestCase):
+    """A test case for IsrSdqaStage.py"""
 
     def setUp(self):
         self.nBadCalibPix = 123456789.0
@@ -45,22 +45,22 @@ class IrsSdqaStageTestCase(unittest.TestCase):
                                                  "isrSdqaStagePolicy.paf", "tests")
         policy = pexPolicy.Policy.createPolicy(policyFile)
 
-        tester = SimpleStageTester(sdqaPipe.IrsSdqaStage(policy.get("IrsSdqaStage")))
+        tester = SimpleStageTester(sdqaPipe.IsrSdqaStage(policy.get("IsrSdqaStage")))
 
         clipboard = pexClipboard.Clipboard()
 
-        exposureKey = policy.get("IrsSdqaStage.inputKeys.exposureKey")
-        nBadCalibPixKey = policy.get("IrsSdqaStage.inputKeys.nBadCalibPixKey")
-        nSaturatePixKey = policy.get("IrsSdqaStage.inputKeys.nSaturatePixKey")
-        overscanMeanKey = policy.get("IrsSdqaStage.inputKeys.overscanMeanKey")
-        overscanMeanUncKey = policy.get("IrsSdqaStage.inputKeys.overscanMeanUncKey")
-        overscanStdDevKey = policy.get("IrsSdqaStage.inputKeys.overscanStdDevKey")
-        overscanMedianKey = policy.get("IrsSdqaStage.inputKeys.overscanMedianKey")
-        imageMedianKey = policy.get("IrsSdqaStage.inputKeys.imageMedianKey")
-        imageMinKey = policy.get("IrsSdqaStage.inputKeys.imageMinKey")
-        imageMaxKey = policy.get("IrsSdqaStage.inputKeys.imageMaxKey")
-        xImageGradientKey = policy.get("IrsSdqaStage.inputKeys.xImageGradientKey")
-        yImageGradientKey = policy.get("IrsSdqaStage.inputKeys.yImageGradientKey")
+        exposureKey = policy.get("IsrSdqaStage.inputKeys.exposureKey")
+        nBadCalibPixKey = policy.get("IsrSdqaStage.inputKeys.nBadCalibPixKey")
+        nSaturatePixKey = policy.get("IsrSdqaStage.inputKeys.nSaturatePixKey")
+        overscanMeanKey = policy.get("IsrSdqaStage.inputKeys.overscanMeanKey")
+        overscanMeanUncKey = policy.get("IsrSdqaStage.inputKeys.overscanMeanUncKey")
+        overscanStdDevKey = policy.get("IsrSdqaStage.inputKeys.overscanStdDevKey")
+        overscanMedianKey = policy.get("IsrSdqaStage.inputKeys.overscanMedianKey")
+        imageMedianKey = policy.get("IsrSdqaStage.inputKeys.imageMedianKey")
+        imageMinKey = policy.get("IsrSdqaStage.inputKeys.imageMinKey")
+        imageMaxKey = policy.get("IsrSdqaStage.inputKeys.imageMaxKey")
+        xImageGradientKey = policy.get("IsrSdqaStage.inputKeys.xImageGradientKey")
+        yImageGradientKey = policy.get("IsrSdqaStage.inputKeys.yImageGradientKey")
 
         exposure = afwImage.ExposureF()
         metadata = afwImage.Metadata()
@@ -82,7 +82,7 @@ class IrsSdqaStageTestCase(unittest.TestCase):
 
         tester.runWorker(clipboard)
 
-        res = clipboard.get(policy.get("IrsSdqaStage.outputKeys.isrPersistableSdqaRatingVectorKey"))
+        res = clipboard.get(policy.get("IsrSdqaStage.outputKeys.isrPersistableSdqaRatingVectorKey"))
 
         sdqaRatingScope = policy.get("parameters.sdqaRatingScope")
 
@@ -164,7 +164,7 @@ def suite():
     if not eups.productDir("sdqa"):
         print >> sys.stderr, "sdqa is not setting up; skipping test"
     else:        
-        suites += unittest.makeSuite(IrsSdqaStageTestCase)
+        suites += unittest.makeSuite(IsrSdqaStageTestCase)
 
     suites += unittest.makeSuite(utilsTests.MemoryTestCase)
     return unittest.TestSuite(suites)
