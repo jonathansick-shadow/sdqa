@@ -31,6 +31,8 @@ class IsrSdqaStageTestCase(unittest.TestCase):
         self.overscanMeanUnc = 234.5
         self.overscanStdDev = 345.6
         self.overscanMedian = 456.7
+        self.imageStdDev = 111.1
+        self.imageClippedMean4Sigma3Passes = 222.2
         self.imageMedian = 567.8
         self.imageMin = 678.9
         self.imageMax = 789.0
@@ -56,6 +58,8 @@ class IsrSdqaStageTestCase(unittest.TestCase):
         overscanMeanUncKey = policy.get("IsrSdqaStage.inputKeys.overscanMeanUncKey")
         overscanStdDevKey = policy.get("IsrSdqaStage.inputKeys.overscanStdDevKey")
         overscanMedianKey = policy.get("IsrSdqaStage.inputKeys.overscanMedianKey")
+        imageStdDevKey = policy.get("IsrSdqaStage.inputKeys.imageStdDevKey")
+        imageClippedMean4Sigma3PassesKey = policy.get("IsrSdqaStage.inputKeys.imageClippedMean4Sigma3PassesKey")
         imageMedianKey = policy.get("IsrSdqaStage.inputKeys.imageMedianKey")
         imageMinKey = policy.get("IsrSdqaStage.inputKeys.imageMinKey")
         imageMaxKey = policy.get("IsrSdqaStage.inputKeys.imageMaxKey")
@@ -70,6 +74,8 @@ class IsrSdqaStageTestCase(unittest.TestCase):
         metadata.setDouble(overscanMeanUncKey, self.overscanMeanUnc)
         metadata.setDouble(overscanStdDevKey, self.overscanStdDev)
         metadata.setDouble(overscanMedianKey, self.overscanMedian)
+        metadata.setDouble(imageStdDevKey, self.imageStdDev)
+        metadata.setDouble(imageClippedMean4Sigma3PassesKey, self.imageClippedMean4Sigma3Passes)
         metadata.setDouble(imageMedianKey, self.imageMedian)
         metadata.setDouble(imageMinKey, self.imageMin)
         metadata.setDouble(imageMaxKey, self.imageMax)
@@ -86,7 +92,7 @@ class IsrSdqaStageTestCase(unittest.TestCase):
 
         sdqaRatingScope = policy.get("IsrSdqaStage.parameters.sdqaRatingScope")
 
-        containerSlice2 = res.getSdqaRatings()[0:10]
+        containerSlice2 = res.getSdqaRatings()[0:12]
         print "get ====="
         j = 0
         for s2 in containerSlice2:
@@ -124,30 +130,42 @@ class IsrSdqaStageTestCase(unittest.TestCase):
         assert(res.getSdqaRatings()[i].getRatingScope() == sdqaRatingScope)
 
         i = 5
+        assert(res.getSdqaRatings()[i].getName()  == imageStdDevKey)
+        assert(res.getSdqaRatings()[i].getValue() == self.imageStdDev)
+        assert(res.getSdqaRatings()[i].getErr()   == 0.0)
+        assert(res.getSdqaRatings()[i].getRatingScope() == sdqaRatingScope)
+
+        i = 6
+        assert(res.getSdqaRatings()[i].getName()  == imageClippedMean4Sigma3PassesKey)
+        assert(res.getSdqaRatings()[i].getValue() == self.imageClippedMean4Sigma3Passes)
+        assert(res.getSdqaRatings()[i].getErr()   == 0.0)
+        assert(res.getSdqaRatings()[i].getRatingScope() == sdqaRatingScope)
+
+        i = 7
         assert(res.getSdqaRatings()[i].getName()  == imageMedianKey)
         assert(res.getSdqaRatings()[i].getValue() == self.imageMedian)
         assert(res.getSdqaRatings()[i].getErr()   == 0.0)
         assert(res.getSdqaRatings()[i].getRatingScope() == sdqaRatingScope)
 
-        i = 6
+        i = 8
         assert(res.getSdqaRatings()[i].getName()  == imageMinKey)
         assert(res.getSdqaRatings()[i].getValue() == self.imageMin)
         assert(res.getSdqaRatings()[i].getErr()   == 0.0)
         assert(res.getSdqaRatings()[i].getRatingScope() == sdqaRatingScope)
 
-        i = 7
+        i = 9
         assert(res.getSdqaRatings()[i].getName()  == imageMaxKey)
         assert(res.getSdqaRatings()[i].getValue() == self.imageMax)
         assert(res.getSdqaRatings()[i].getErr()   == 0.0)
         assert(res.getSdqaRatings()[i].getRatingScope() == sdqaRatingScope)
 
-        i = 8
+        i = 10
         assert(res.getSdqaRatings()[i].getName()  == xImageGradientKey)
         assert(res.getSdqaRatings()[i].getValue() == self.xImageGradient)
         assert(res.getSdqaRatings()[i].getErr()   == 0.0)
         assert(res.getSdqaRatings()[i].getRatingScope() == sdqaRatingScope)
 
-        i = 9
+        i = 11
         assert(res.getSdqaRatings()[i].getName()  == yImageGradientKey)
         assert(res.getSdqaRatings()[i].getValue() == self.yImageGradient)
         assert(res.getSdqaRatings()[i].getErr()   == 0.0)

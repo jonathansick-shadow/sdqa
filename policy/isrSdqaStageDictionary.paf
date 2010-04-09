@@ -20,77 +20,91 @@ definitions: {
                 }        
                 nBadCalibPixKey: {
                     type: "string"
-                    description: "Name of clipboard keyword for SDQA rating nBadCalibPix."
+                    description: "Name of metadata keyword for SDQA rating nBadCalibPix."
                     minOccurs: 1
                     maxOccurs: 1
                     default: "nBadCalibPix"
                 }        
                 nSaturatePixKey: {
                     type: "string"
-                    description: "Name of clipboard keyword for SDQA rating nSaturatePix."
+                    description: "Name of metadata keyword for SDQA rating nSaturatePix."
                     minOccurs: 1
                     maxOccurs: 1
                     default: "nSaturatePix"
                 }        
                 overscanMeanKey: {
                     type: "string"
-                    description: "Name of clipboard keyword for SDQA rating overscanMean."
+                    description: "Name of metadata keyword for SDQA rating overscanMean."
                     minOccurs: 1
                     maxOccurs: 1
                     default: "overscanMean"
                 }        
                 overscanMeanUncKey: {
                     type: "string"
-                    description: "Name of clipboard keyword for uncertainty of SDQA rating overscanMean."
+                    description: "Name of metadata keyword for uncertainty of SDQA rating overscanMean."
                     minOccurs: 1
                     maxOccurs: 1
                     default: "overscanMeanUnc"
                 }        
                 overscanStdDevKey: {
                     type: "string"
-                    description: "Name of clipboard keyword for SDQA rating overscanStdDev."
+                    description: "Name of metadata keyword for SDQA rating overscanStdDev."
                     minOccurs: 1
                     maxOccurs: 1
                     default: "overscanStdDev"
                 }        
                 overscanMedianKey: {
                     type: "string"
-                    description: "Name of clipboard keyword for SDQA rating overscanMedian."
+                    description: "Name of metadata keyword for SDQA rating overscanMedian."
                     minOccurs: 1
                     maxOccurs: 1
                     default: "overscanMedian"
-                }        
+                }
+                imageStdDevKey: {
+                    type: "string"
+                    description: "Name of metadata keyword for SDQA rating imageStdDev."
+                    minOccurs: 1
+                    maxOccurs: 1
+                    default: "imageStdDev"
+                }
+                 imageClippedMean4Sigma3PassesKey: {
+                    type: "string"
+                    description: "Name of metadata keyword for SDQA rating imageClippedMean4Sigma3Passes."
+                    minOccurs: 1
+                    maxOccurs: 1
+                    default: "imageClippedMean4Sigma3Passes"
+                }
                 imageMedianKey: {
                     type: "string"
-                    description: "Name of clipboard keyword for SDQA rating imageMedian."
+                    description: "Name of metadata keyword for SDQA rating imageMedian."
                     minOccurs: 1
                     maxOccurs: 1
                     default: "imageMedian"
                 }        
                 imageMinKey: {
                     type: "string"
-                    description: "Name of clipboard keyword for SDQA rating imageMin."
+                    description: "Name of metadata keyword for SDQA rating imageMin."
                     minOccurs: 1
                     maxOccurs: 1
                     default: "imageMin"
                 }        
                 imageMaxKey: {
                     type: "string"
-                    description: "Name of clipboard keyword for SDQA rating imageMax."
+                    description: "Name of metadata keyword for SDQA rating imageMax."
                     minOccurs: 1
                     maxOccurs: 1
                     default: "imageMax"
                 }        
                 xImageGradientKey: {
                     type: "string"
-                    description: "Name of clipboard keyword for SDQA rating imageGradientX."
+                    description: "Name of metadata keyword for SDQA rating imageGradientX."
                     minOccurs: 1
                     maxOccurs: 1
                     default: "imageGradientX"
                 }        
                 yImageGradientKey: {
                     type: "string"
-                    description: "Name of clipboard keyword for SDQA rating imageGradientY."
+                    description: "Name of metadata keyword for SDQA rating imageGradientY."
                     minOccurs: 1
                     maxOccurs: 1
                     default: "imageGradientY"
