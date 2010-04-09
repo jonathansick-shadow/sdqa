@@ -45,7 +45,7 @@ class IsrSdqaStageParallel(harnessStage.ParallelProcessing):
         self.overscanStdDevKey = self.policy.get("inputKeys.overscanStdDevKey")
         self.overscanMedianKey = self.policy.get("inputKeys.overscanMedianKey")
         self.imageStdDevKey = self.policy.get("inputKeys.imageStdDevKey")
-        self.imageClippedMean4Sigma3PassesKey = self.policy.get("inputKeys.imageClippedMean4Sigma3PassesKey")
+        self.imageClippedMeanKey = self.policy.get("inputKeys.imageClippedMeanKey")
         self.imageMedianKey = self.policy.get("inputKeys.imageMedianKey")
         self.imageMinKey = self.policy.get("inputKeys.imageMinKey")
         self.imageMaxKey = self.policy.get("inputKeys.imageMaxKey")
@@ -77,7 +77,7 @@ class IsrSdqaStageParallel(harnessStage.ParallelProcessing):
         overscanStdDev = propertySet.getAsDouble(self.overscanStdDevKey)
         overscanMedian = propertySet.getAsDouble(self.overscanMedianKey)
         imageStdDev = propertySet.getAsDouble(self.imageStdDevKey)
-        imageClippedMean4Sigma3Passes = propertySet.getAsDouble(self.imageClippedMean4Sigma3PassesKey)
+        imageClippedMean = propertySet.getAsDouble(self.imageClippedMeanKey)
         imageMedian = propertySet.getAsDouble(self.imageMedianKey)
         imageMin = propertySet.getAsDouble(self.imageMinKey)
         imageMax = propertySet.getAsDouble(self.imageMaxKey)
@@ -98,8 +98,8 @@ class IsrSdqaStageParallel(harnessStage.ParallelProcessing):
                                            overscanMedian,  0.0, self.sdqaRatingScope))
         sdqaRatings.append(sdqa.SdqaRating(self.imageStdDevKey, \
                                            imageStdDev,  0.0, self.sdqaRatingScope))
-        sdqaRatings.append(sdqa.SdqaRating(self.imageClippedMean4Sigma3PassesKey, \
-                                           imageClippedMean4Sigma3Passes,  0.0, self.sdqaRatingScope))
+        sdqaRatings.append(sdqa.SdqaRating(self.imageClippedMeanKey, \
+                                           imageClippedMean,  0.0, self.sdqaRatingScope))
         sdqaRatings.append(sdqa.SdqaRating(self.imageMedianKey, \
                                            imageMedian,  0.0, self.sdqaRatingScope))
         sdqaRatings.append(sdqa.SdqaRating(self.imageMinKey, \

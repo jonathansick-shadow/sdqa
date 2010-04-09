@@ -11,7 +11,7 @@ IsrSdqaStage: {
         overscanStdDevKey: "overscanStdDev"
         overscanMedianKey: "overscanMedian"
         imageStdDevKey: "imageStdDev"
-        imageClippedMean4Sigma3PassesKey: "imageClippedMean4Sigma3Passes"
+        imageClippedMeanKey: "imageClippedMean4Sigma3Passes"
         imageMedianKey: "imageMedian"
         imageMinKey: "imageMin"
         imageMaxKey: "imageMax"

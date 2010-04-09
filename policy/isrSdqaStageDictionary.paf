@@ -67,9 +67,9 @@ definitions: {
                     maxOccurs: 1
                     default: "imageStdDev"
                 }
-                 imageClippedMean4Sigma3PassesKey: {
+                 imageClippedMeanKey: {
                     type: "string"
-                    description: "Name of metadata keyword for SDQA rating imageClippedMean4Sigma3Passes."
+                    description: "Name of metadata keyword for SDQA rating imageClippedMean."
                     minOccurs: 1
                     maxOccurs: 1
                     default: "imageClippedMean4Sigma3Passes"

@@ -59,7 +59,7 @@ class IsrSdqaStageTestCase(unittest.TestCase):
         overscanStdDevKey = policy.get("IsrSdqaStage.inputKeys.overscanStdDevKey")
         overscanMedianKey = policy.get("IsrSdqaStage.inputKeys.overscanMedianKey")
         imageStdDevKey = policy.get("IsrSdqaStage.inputKeys.imageStdDevKey")
-        imageClippedMean4Sigma3PassesKey = policy.get("IsrSdqaStage.inputKeys.imageClippedMean4Sigma3PassesKey")
+        imageClippedMeanKey = policy.get("IsrSdqaStage.inputKeys.imageClippedMeanKey")
         imageMedianKey = policy.get("IsrSdqaStage.inputKeys.imageMedianKey")
         imageMinKey = policy.get("IsrSdqaStage.inputKeys.imageMinKey")
         imageMaxKey = policy.get("IsrSdqaStage.inputKeys.imageMaxKey")
@@ -75,7 +75,7 @@ class IsrSdqaStageTestCase(unittest.TestCase):
         metadata.setDouble(overscanStdDevKey, self.overscanStdDev)
         metadata.setDouble(overscanMedianKey, self.overscanMedian)
         metadata.setDouble(imageStdDevKey, self.imageStdDev)
-        metadata.setDouble(imageClippedMean4Sigma3PassesKey, self.imageClippedMean4Sigma3Passes)
+        metadata.setDouble(imageClippedMeanKey, self.imageClippedMean4Sigma3Passes)
         metadata.setDouble(imageMedianKey, self.imageMedian)
         metadata.setDouble(imageMinKey, self.imageMin)
         metadata.setDouble(imageMaxKey, self.imageMax)
@@ -136,7 +136,7 @@ class IsrSdqaStageTestCase(unittest.TestCase):
         assert(res.getSdqaRatings()[i].getRatingScope() == sdqaRatingScope)
 
         i = 6
-        assert(res.getSdqaRatings()[i].getName()  == imageClippedMean4Sigma3PassesKey)
+        assert(res.getSdqaRatings()[i].getName()  == imageClippedMeanKey)
         assert(res.getSdqaRatings()[i].getValue() == self.imageClippedMean4Sigma3Passes)
         assert(res.getSdqaRatings()[i].getErr()   == 0.0)
         assert(res.getSdqaRatings()[i].getRatingScope() == sdqaRatingScope)
