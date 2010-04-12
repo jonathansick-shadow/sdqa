@@ -2,7 +2,7 @@
 
 import unittest
 
-import lsst.sdqa.sdqaLib as sdqa
+import lsst.sdqa as sdqa
 from lsst.pex.exceptions import LsstCppException
 
 class SdqaMetricTestCase(unittest.TestCase):

@@ -2,7 +2,7 @@
 
 import unittest
 
-import lsst.sdqa.sdqaLib as sdqa
+import lsst.sdqa as sdqa
 
 class SdqaThresholdTestCase(unittest.TestCase):
     """A test case for SdqaThreshold."""

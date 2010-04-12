@@ -17,7 +17,7 @@ import lsst.pex.policy as pexPolicy
 import lsst.pex.harness as pexHarness
 import lsst.pex.harness.stage as harnessStage
 from lsst.pex.harness.simpleStageTester import SimpleStageTester
-import lsst.sdqa.sdqaLib as sdqa
+import lsst.sdqa as sdqa
 import lsst.sdqa.pipeline as sdqaPipe
 import lsst.afw.detection as afwDetect
 import lsst.daf.base as dafBase

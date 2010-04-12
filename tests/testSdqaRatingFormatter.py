@@ -87,7 +87,7 @@ import lsst.daf.base as dafBase
 import lsst.pex.policy as dafPolicy
 import lsst.daf.persistence as dafPers
 import lsst.utils.tests as utilsTests
-import lsst.sdqa.sdqaLib as SDQA
+import lsst.sdqa as SDQA
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
