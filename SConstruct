@@ -39,6 +39,7 @@ for d in Split("lib python/lsst/" + re.sub(r'_', "/", pkg) + " tests doc"):
 env['IgnoreFiles'] = r"(~$|\.pyc$|^\.svn$|\.o$)"
 
 Alias("install", [env.Install(env['prefix'], "python"),
+                  env.Install(env['prefix'], "policy"),
                   env.Install(env['prefix'], "include"),
                   env.Install(env['prefix'], "lib"),
                   env.InstallAs(os.path.join(env['prefix'], "doc", "doxygen"),
