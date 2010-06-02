@@ -4,6 +4,12 @@
 IsrSdqaStage: {
     inputKeys: {
         exposureKey: "isrExposure"
+    }
+    outputKeys: {
+        isrPersistableSdqaRatingVectorKey: "isrPersistableSdqaRatingVector"
+    }
+    parameters: {
+        sdqaRatingScope: 0
         nBadCalibPixKey: "nBadCalibPix"
         nSaturatePixKey: "nSaturatePix"
         overscanMeanKey: "overscanMean"
@@ -17,11 +23,5 @@ IsrSdqaStage: {
         imageMaxKey: "imageMax"
         xImageGradientKey: "imageGradientX"
         yImageGradientKey: "imageGradientY"
-    }
-    outputKeys: {
-        isrPersistableSdqaRatingVectorKey: "isrPersistableSdqaRatingVector"
-    }
-    parameters: {
-        sdqaRatingScope: 0
     }
 }
