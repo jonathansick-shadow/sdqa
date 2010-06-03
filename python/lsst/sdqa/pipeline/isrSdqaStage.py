@@ -64,7 +64,10 @@ class IsrSdqaStageParallel(harnessStage.ParallelProcessing):
 
         v = {}
         for m in self.sdqaMetricNames:
-           v[m] = propertySet.getAsDouble(m)
+            try:
+                v[m] = propertySet.getAsDouble(m)
+            except pexExcept.LsstCppException:
+                v[m] = propertySet.getAsDouble(m.upper())
 
         # Put SDQA ratings on clipboard.
         sdqaRatings = sdqa.SdqaRatingSet()

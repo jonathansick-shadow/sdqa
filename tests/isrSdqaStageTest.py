@@ -46,8 +46,14 @@ class IsrSdqaStageTestCase(unittest.TestCase):
         exposure = afwImage.ExposureF()
         metadata = exposure.getMetadata()
 
+        # Load metadata.  Assume FITS round-tripping converts some metadata names
+        # to all upper case.
+
         for i in xrange(len(sdqaMetricNames)):
-            metadata.setDouble(sdqaMetricNames[i], self.v[i])
+            if i % 2 == 0:
+                metadata.setDouble(sdqaMetricNames[i], self.v[i])
+            else:
+                metadata.setDouble(sdqaMetricNames[i].upper(), self.v[i])
 
         exposure.setMetadata( metadata )
 
@@ -63,7 +69,7 @@ class IsrSdqaStageTestCase(unittest.TestCase):
         for i in xrange(len(sdqaMetricNames)):
             s2 = res.getSdqaRatings()[i]
             print i, "[", s2.getName(), "]", s2.getValue(), s2.getErr(), s2.getRatingScope()
-        assert(s2.getName()  == sdqaMetricNames[i])
+        assert(s2.getName().upper()  == sdqaMetricNames[i].upper())
         assert(s2.getValue() == self.v[i])
         assert(s2.getErr()   == 0.0)
         assert(s2.getRatingScope() == sdqaRatingScope)
