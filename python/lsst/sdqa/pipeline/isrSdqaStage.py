@@ -39,20 +39,9 @@ class IsrSdqaStageParallel(harnessStage.ParallelProcessing):
 
         self.exposureKey = self.policy.get("inputKeys.exposureKey")
 
-        self.nBadCalibPixKey = self.policy.get("parameters.nBadCalibPixKey")
-        self.nSaturatePixKey = self.policy.get("parameters.nSaturatePixKey")
-        self.overscanMeanKey = self.policy.get("parameters.overscanMeanKey")
-        self.overscanMeanUncKey = self.policy.get("parameters.overscanMeanUncKey")
-        self.overscanStdDevKey = self.policy.get("parameters.overscanStdDevKey")
-        self.overscanMedianKey = self.policy.get("parameters.overscanMedianKey")
-        self.imageStdDevKey = self.policy.get("parameters.imageStdDevKey")
-        self.imageClippedMeanKey = self.policy.get("parameters.imageClippedMeanKey")
-        self.imageMedianKey = self.policy.get("parameters.imageMedianKey")
-        self.imageMinKey = self.policy.get("parameters.imageMinKey")
-        self.imageMaxKey = self.policy.get("parameters.imageMaxKey")
-        self.xImageGradientKey = self.policy.get("parameters.xImageGradientKey")
-        self.yImageGradientKey = self.policy.get("parameters.yImageGradientKey")
         self.sdqaRatingScope = self.policy.get("parameters.sdqaRatingScope")
+
+        self.sdqaMetricNames = self.policy.getStringArray("parameters.sdqaMetricNames")
 
         self.isrPersistableSdqaRatingVectorKey = self.policy.get("outputKeys.isrPersistableSdqaRatingVectorKey")
 
@@ -60,6 +49,9 @@ class IsrSdqaStageParallel(harnessStage.ParallelProcessing):
         self.log.log(Log.INFO, "Clipboard name of exposure: %s"% self.exposureKey)
         self.log.log(Log.INFO, \
                      "Clipboard name of isrPersistableSdqaRatingVector: %s"% self.isrPersistableSdqaRatingVectorKey)
+        self.log.log(Log.INFO, "Number of sdqaMetricNames: %d"% len(self.sdqaMetricNames))
+        for k in self.sdqaMetricNames:
+            self.log.log(Log.INFO, "SDQA metric name: %s"% k)
 
     def process(self, clipboard):
 
@@ -70,47 +62,15 @@ class IsrSdqaStageParallel(harnessStage.ParallelProcessing):
         exposure = clipboard.get(self.exposureKey)
         propertySet = exposure.getMetadata()
 
-        nBadCalibPix = propertySet.getAsDouble(self.nBadCalibPixKey)
-        nSaturatePix = propertySet.getAsDouble(self.nSaturatePixKey)
-        overscanMean = propertySet.getAsDouble(self.overscanMeanKey)
-        overscanMeanUnc = propertySet.getAsDouble(self.overscanMeanUncKey)
-        overscanStdDev = propertySet.getAsDouble(self.overscanStdDevKey)
-        overscanMedian = propertySet.getAsDouble(self.overscanMedianKey)
-        imageStdDev = propertySet.getAsDouble(self.imageStdDevKey)
-        imageClippedMean = propertySet.getAsDouble(self.imageClippedMeanKey)
-        imageMedian = propertySet.getAsDouble(self.imageMedianKey)
-        imageMin = propertySet.getAsDouble(self.imageMinKey)
-        imageMax = propertySet.getAsDouble(self.imageMaxKey)
-        xImageGradient = propertySet.getAsDouble(self.xImageGradientKey)
-        yImageGradient = propertySet.getAsDouble(self.yImageGradientKey)
+        v = {}
+        for m in self.sdqaMetricNames:
+           v[m] = propertySet.getAsDouble(m)
 
         # Put SDQA ratings on clipboard.
         sdqaRatings = sdqa.SdqaRatingSet()
-        sdqaRatings.append(sdqa.SdqaRating(self.nBadCalibPixKey, \
-                                           nBadCalibPix,  0, self.sdqaRatingScope))
-        sdqaRatings.append(sdqa.SdqaRating(self.nSaturatePixKey, \
-                                           nSaturatePix,  0, self.sdqaRatingScope))
-        sdqaRatings.append(sdqa.SdqaRating(self.overscanMeanKey, \
-                                           overscanMean,  overscanMeanUnc, self.sdqaRatingScope))
-        sdqaRatings.append(sdqa.SdqaRating(self.overscanStdDevKey, \
-                                           overscanStdDev,  0.0, self.sdqaRatingScope))
-        sdqaRatings.append(sdqa.SdqaRating(self.overscanMedianKey, \
-                                           overscanMedian,  0.0, self.sdqaRatingScope))
-        sdqaRatings.append(sdqa.SdqaRating(self.imageStdDevKey, \
-                                           imageStdDev,  0.0, self.sdqaRatingScope))
-        sdqaRatings.append(sdqa.SdqaRating(self.imageClippedMeanKey, \
-                                           imageClippedMean,  0.0, self.sdqaRatingScope))
-        sdqaRatings.append(sdqa.SdqaRating(self.imageMedianKey, \
-                                           imageMedian,  0.0, self.sdqaRatingScope))
-        sdqaRatings.append(sdqa.SdqaRating(self.imageMinKey, \
-                                           imageMin,  0.0, self.sdqaRatingScope))
-        sdqaRatings.append(sdqa.SdqaRating(self.imageMaxKey, \
-                                           imageMax,  0.0, self.sdqaRatingScope))
-        sdqaRatings.append(sdqa.SdqaRating(self.xImageGradientKey, \
-                                           xImageGradient,  0.0, self.sdqaRatingScope))
-        sdqaRatings.append(sdqa.SdqaRating(self.yImageGradientKey, \
-                                           yImageGradient,  0.0, self.sdqaRatingScope))
-
+        for m in self.sdqaMetricNames:
+            sdqaRatings.append(sdqa.SdqaRating(m, v[m], 0, self.sdqaRatingScope))
+        
         persistableSdqaRatingVector = sdqa.PersistableSdqaRatingVector(sdqaRatings)
         clipboard.put(self.isrPersistableSdqaRatingVectorKey, persistableSdqaRatingVector)
 

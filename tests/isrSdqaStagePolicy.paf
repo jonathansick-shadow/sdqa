@@ -10,18 +10,7 @@ IsrSdqaStage: {
     }
     parameters: {
         sdqaRatingScope: 0
-        nBadCalibPixKey: "nBadCalibPix"
-        nSaturatePixKey: "nSaturatePix"
-        overscanMeanKey: "overscanMean"
-        overscanMeanUncKey: "overscanMeanUnc"
-        overscanStdDevKey: "overscanStdDev"
-        overscanMedianKey: "overscanMedian"
-        imageStdDevKey: "imageStdDev"
-        imageClippedMeanKey: "imageClippedMean4Sigma3Passes"
-        imageMedianKey: "imageMedian"
-        imageMinKey: "imageMin"
-        imageMaxKey: "imageMax"
-        xImageGradientKey: "imageGradientX"
-        yImageGradientKey: "imageGradientY"
+        sdqaMetricNames: 'overscanMean' 'overscanMedian' 'overscanStdDev' 'overscanMin' 'overscanMax'
     }
 }
+
