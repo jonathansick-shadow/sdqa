@@ -29,8 +29,9 @@
 #include "lsst/daf/base/Citizen.h"
 #include "lsst/daf/base/Persistable.h"
 
-#include "boost/cstdint.hpp"
-#include "boost/shared_ptr.hpp"
+#include <boost/cstdint.hpp>
+#include <boost/shared_ptr.hpp>
+#include <boost/serialization/nvp.hpp>
 
 namespace boost {
     namespace serialization {
@@ -99,13 +100,13 @@ private:
 
     template <typename Archive> 
     void serialize(Archive & ar, unsigned int const version) {
-        ar & _sdqa_metricId;
-        ar & _sdqa_thresholdId;
-        ar & _parentDbId;
-        ar & _metricValue;
-        ar & _metricErr;
-        ar & _metricName;
-        ar & _ratingScope;
+        ar & boost::serialization::make_nvp("metricId", _sdqa_metricId);
+        ar & boost::serialization::make_nvp("thresholdId", _sdqa_thresholdId);
+        ar & boost::serialization::make_nvp("parentDbId", _parentDbId);
+        ar & boost::serialization::make_nvp("metricValue", _metricValue);
+        ar & boost::serialization::make_nvp("metricErr", _metricErr);
+        ar & boost::serialization::make_nvp("metricName", _metricName);
+        ar & boost::serialization::make_nvp("ratingScope", _ratingScope);
     }
 
     friend class boost::serialization::access;
