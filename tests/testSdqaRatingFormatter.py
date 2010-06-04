@@ -84,7 +84,7 @@ database: {
 import unittest
 
 import lsst.daf.base as dafBase
-import lsst.pex.policy as dafPolicy
+import lsst.pex.policy as pexPolicy
 import lsst.daf.persistence as dafPers
 import lsst.utils.tests as utilsTests
 import lsst.sdqa as SDQA
@@ -206,9 +206,49 @@ class SdqaRatingTestCase(unittest.TestCase):
             assert s.getName() == self.metricNames[j]
             j += 1
 
+    def testBoostPersistence(self):
+
+        policyFile = pexPolicy.DefaultPolicyFile("sdqa", 
+                                                 "sdqaRatingFormatter.paf", "tests")
+        pol = pexPolicy.Policy.createPolicy(policyFile)
+
+        asdf = pol.get("InputStage.parameters.persistence.Formatter.PersistableSdqaRatingVector.asdf")
+        print "asdf=", asdf
+
+        pers = dafPers.Persistence.getPersistence(pol)
+
+        dp = dafBase.PropertySet()
+        dp.addInt("sliceId", 0)
+        dp.setLongLong("ampExposureId", 98765432101234)
+        dp.addInt("numSlices", 1)
+        dp.addString("sdqaRatingScope", "AMP")
+
+        loc = dafPers.LogicalLocation("sdqaRating.boost")
+        storage = pers.getPersistStorage("BoostStorage", loc)
+        stl = dafPers.StorageList([storage])
+        pers.persist(self.dsv1, stl, dp)
+
+        # Retrieve it again
+        storage = pers.getRetrieveStorage("BoostStorage", loc)
+        stl = dafPers.StorageList([storage])
+        
+        persistable = pers.unsafeRetrieve("PersistableSdqaRatingVector", stl, dp)
+        res = SDQA.PersistableSdqaRatingVector.swigConvert(persistable)
+
+        print "Check (BoostStorage) ====\n"
+        assert(res == self.dsv1)
+
     def testPersistence(self):
         if dafPers.DbAuth.available("lsst10.ncsa.uiuc.edu", "3306"):
-            pers = dafPers.Persistence.getPersistence(dafPolicy.Policy())
+
+            policyFile = pexPolicy.DefaultPolicyFile("sdqa",
+                                                     "sdqaRatingFormatter.paf", "tests")
+            pol = pexPolicy.Policy.createPolicy(policyFile)
+
+            asdf = pol.get("InputStage.parameters.persistence.Formatter.PersistableSdqaRatingVector.asdf")
+            print "asdf=", asdf
+
+            pers = dafPers.Persistence.getPersistence(pol)
             loc  = dafPers.LogicalLocation("mysql://lsst10.ncsa.uiuc.edu:3306/russ")
             dp = dafBase.PropertySet()
             dp.addInt("sliceId", 0)
@@ -232,6 +272,7 @@ class SdqaRatingTestCase(unittest.TestCase):
 
 
             containerSlice = self.dsv1.getSdqaRatings()[0:16]
+            print "Check (DbStorage) ====\n"
             print "put ===="        
             j = 0
             for s in containerSlice:

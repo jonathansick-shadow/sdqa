@@ -1,0 +1,15 @@
+#<?cfg paf dictionary ?>
+#
+
+InputStage: {
+    parameters: {
+        persistence: {
+            Formatter: {
+                PersistableSdqaRatingVector: {
+                    asdf: "This is a test."
+                }
+            }
+        }
+    }
+}
+

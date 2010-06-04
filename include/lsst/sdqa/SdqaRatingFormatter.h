@@ -24,6 +24,7 @@
 
 #include <string>
 #include <vector>
+#include <lsst/tr1/unordered_map.h>
 
 #include "boost/cstdint.hpp"
 #include "boost/serialization/shared_ptr.hpp"
@@ -70,6 +71,13 @@ public:
 
 private:
 
+    typedef std::tr1::unordered_map<std::string, int> NamesIdsMap;
+    typedef std::tr1::unordered_map<int, int> IdsIdsMap;
+    typedef std::tr1::unordered_map<int, std::string> IdsNamesMap;
+
+    NamesIdsMap _sdqaMetricIds;
+    IdsIdsMap   _sdqaThresholdIds;
+    IdsNamesMap _sdqaMetricNames;
 
     /*
      * ordered list of columns in appropriate Sdqa_Rating_xxx database table 
@@ -106,6 +114,10 @@ private:
         lsst::daf::persistence::DbStorage &,
         lsst::sdqa::SdqaRating &,
         std::string columnNameOfImageId
+    );
+
+    void querySdqaTables(
+        lsst::daf::persistence::DbStorage &
     );
 
     int64_t extractExposureId(lsst::daf::base::PropertySet::Ptr const& properties);
