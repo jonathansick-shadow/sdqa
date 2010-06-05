@@ -212,8 +212,8 @@ class SdqaRatingTestCase(unittest.TestCase):
                                                  "sdqaRatingFormatter.paf", "tests")
         pol = pexPolicy.Policy.createPolicy(policyFile)
 
-        asdf = pol.get("InputStage.parameters.persistence.Formatter.PersistableSdqaRatingVector.asdf")
-        print "asdf=", asdf
+        sdqaLookupDatabase = pol.get("Formatter.PersistableSdqaRatingVector.sdqaLookupDatabase")
+        print "sdqaLookupDatabase=", sdqaLookupDatabase
 
         pers = dafPers.Persistence.getPersistence(pol)
 
@@ -245,8 +245,8 @@ class SdqaRatingTestCase(unittest.TestCase):
                                                      "sdqaRatingFormatter.paf", "tests")
             pol = pexPolicy.Policy.createPolicy(policyFile)
 
-            asdf = pol.get("InputStage.parameters.persistence.Formatter.PersistableSdqaRatingVector.asdf")
-            print "asdf=", asdf
+            sdqaLookupDatabase = pol.get("Formatter.PersistableSdqaRatingVector.sdqaLookupDatabase")
+            print "sdqaLookupDatabase=", sdqaLookupDatabase
 
             pers = dafPers.Persistence.getPersistence(pol)
             loc  = dafPers.LogicalLocation("mysql://lsst10.ncsa.uiuc.edu:3306/russ")

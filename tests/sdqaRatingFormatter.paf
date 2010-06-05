@@ -1,15 +1,9 @@
 #<?cfg paf dictionary ?>
 #
 
-InputStage: {
-    parameters: {
-        persistence: {
-            Formatter: {
-                PersistableSdqaRatingVector: {
-                    asdf: "This is a test."
-                }
-            }
-        }
+Formatter: {
+    PersistableSdqaRatingVector: {
+        sdqaLookupDatabase: "mysql://lsst10.ncsa.uiuc.edu:3306/russ"
     }
 }
 

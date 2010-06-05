@@ -20,7 +20,6 @@
  */
 
 #include <memory>
-#include <iostream>
 
 #include "boost/format.hpp"
 #include "lsst/daf/base.h"
@@ -42,18 +41,17 @@ namespace qa = lsst::sdqa;
  */
 
 /**
- * Basic constructor for SdqaRatingFormatter class.
+ * Constructor for SdqaRatingFormatter class.
  */
 
 qa::SdqaRatingVectorFormatter::SdqaRatingVectorFormatter(pol::Policy::Ptr const & policy) : 
     per::Formatter(typeid(*this)),
     _policy(policy) {
 
-    if (policy) {
-       std::cout << "***Policy exists." << std::endl;
-    } else {
-       std::cout << "***Policy does not exist." << std::endl;
-    }
+    std::string sdqaLookupDatabase = _policy->getString("sdqaLookupDatabase");
+    per::DbStorage db;
+    db.setRetrieveLocation(sdqaLookupDatabase);
+    querySdqaTables(db);
 }
 
 
@@ -175,6 +173,8 @@ void qa::SdqaRatingVectorFormatter::delegateSerialize(
     qa::PersistableSdqaRatingVector * p = 
         dynamic_cast<qa::PersistableSdqaRatingVector*>(persistable);
 
+    archive & boost::serialization::make_nvp("base", 
+                                             boost::serialization::base_object<bas::Persistable>(*p));
     archive & boost::serialization::make_nvp("sdqaRatings", p->_sdqaRatings);
 
 }
@@ -262,7 +262,14 @@ void qa::SdqaRatingVectorFormatter::write(
         }
         bs->getOArchive() & *p;
 
+    /* This part needs more work because of differences between XmlStorage and BoostStorage,
+       to be fixed for DC3b.
     } else if (typeid(*storage) == typeid(per::XmlStorage)) {
+
+
+        throw LSST_EXCEPT(ex::RuntimeErrorException,
+            "Need to add code here to assign parentDbId, etc.");
+
 
         per::XmlStorage * xs = 
             dynamic_cast<per::XmlStorage *>(storage.get());
@@ -270,7 +277,8 @@ void qa::SdqaRatingVectorFormatter::write(
             throw LSST_EXCEPT(ex::RuntimeErrorException, 
                 "Didn't get XmlStorage");
         }
-        xs->getOArchive() & boost::serialization::make_nvp("ratingsVector", *p);
+        xs->getOArchive() & *p;
+   */
 
     } else if (typeid(*storage) == typeid(per::DbStorage) || 
                typeid(*storage) == typeid(per::DbTsvStorage)) {
@@ -281,10 +289,6 @@ void qa::SdqaRatingVectorFormatter::write(
             if (db == 0) {
                 throw LSST_EXCEPT(ex::RuntimeErrorException, 
                     "Didn't get DbStorage");
-            }
-
-            if (_sdqaMetricIds.size() == 0) {
-                querySdqaTables(*db);
             }
 
             unsigned short seq    = 1;
@@ -301,6 +305,7 @@ void qa::SdqaRatingVectorFormatter::write(
                 int sdqa_thresholdId = _sdqaThresholdIds[sdqa_metricId];
                 (*i)->qa::SdqaRating::setSdqaThresholdId(sdqa_thresholdId);
 
+                (*i)->qa::SdqaRating::setParentDbId(parentDbId);
                 ++seq;
                 if (seq == 0) { // Overflowed
                     throw LSST_EXCEPT(ex::RuntimeErrorException, 
@@ -324,45 +329,22 @@ void qa::SdqaRatingVectorFormatter::write(
         } else {
 
 
+            throw LSST_EXCEPT(ex::RuntimeErrorException, 
+                "Need to add code here to assign parentDbId, etc.");
+
+
             per::DbTsvStorage * db = 
                 dynamic_cast<per::DbTsvStorage *>(storage.get());
             if (db == 0) {
                 throw LSST_EXCEPT(ex::RuntimeErrorException, 
                     "Didn't get DbTsvStorage");
             }
-
-            if (_sdqaMetricIds.size() == 0) {
-                querySdqaTables(*db);
-            }
-
-            unsigned short seq    = 1;
-            qa::SdqaRatingSet::iterator i = sdqaRatingVector.begin();
-
-            for ( ; i != sdqaRatingVector.end(); ++i) {
-
-                // Look up the sdqa_metricId given the metricName.
-                std::string metricName = (*i)->qa::SdqaRating::getName();
-                int sdqa_metricId = _sdqaMetricIds[metricName];
-                (*i)->qa::SdqaRating::setSdqaMetricId(sdqa_metricId);
-
-                // Look up the sdqa_thresholdId given the sdqa_metricId.
-                int sdqa_thresholdId = _sdqaThresholdIds[sdqa_metricId];
-                (*i)->qa::SdqaRating::setSdqaThresholdId(sdqa_thresholdId);
-
-                ++seq;
-                if (seq == 0) { // Overflowed
-                    throw LSST_EXCEPT(ex::RuntimeErrorException, 
-                        "Too many SdqaRatings");
-                }
-            }
-
-
             db->setTableForInsert(tableName);
 
-            qa::SdqaRatingSet::const_iterator j(sdqaRatingVector.begin());
+            qa::SdqaRatingSet::const_iterator i(sdqaRatingVector.begin());
             qa::SdqaRatingSet::const_iterator const end(sdqaRatingVector.end());
-            for (; j != end; ++j) {
-                insertRow<per::DbTsvStorage>(*db, **j, columnNameOfImageId);
+            for (; i != end; ++i) {
+                insertRow<per::DbTsvStorage>(*db, **i, columnNameOfImageId);
             }
         }
 
@@ -445,8 +427,6 @@ bas::Persistable* qa::SdqaRatingVectorFormatter::read(
             throw LSST_EXCEPT(ex::RuntimeErrorException, 
                 "Didn't get DbStorage");
         }
-
-        querySdqaTables(*db);
 
         /*
          * Query the appropriate sdqa_Rating_xxx database table.
