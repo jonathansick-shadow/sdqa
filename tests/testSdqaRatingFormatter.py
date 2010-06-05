@@ -238,6 +238,38 @@ class SdqaRatingTestCase(unittest.TestCase):
         print "Check (BoostStorage) ====\n"
         assert(res == self.dsv1)
 
+    def testXmlPersistence(self):
+
+        policyFile = pexPolicy.DefaultPolicyFile("sdqa",
+                                                 "sdqaRatingFormatter.paf", "tests")
+        pol = pexPolicy.Policy.createPolicy(policyFile)
+
+        sdqaLookupDatabase = pol.get("Formatter.PersistableSdqaRatingVector.sdqaLookupDatabase")
+        print "sdqaLookupDatabase=", sdqaLookupDatabase
+
+        pers = dafPers.Persistence.getPersistence(pol)
+
+        dp = dafBase.PropertySet()
+        dp.addInt("sliceId", 0)
+        dp.setLongLong("ampExposureId", 98765432101234)
+        dp.addInt("numSlices", 1)
+        dp.addString("sdqaRatingScope", "AMP")
+
+        loc = dafPers.LogicalLocation("sdqaRating.xml")
+        storage = pers.getPersistStorage("XmlStorage", loc)
+        stl = dafPers.StorageList([storage])
+        pers.persist(self.dsv1, stl, dp)
+
+        # Retrieve it again
+        storage = pers.getRetrieveStorage("XmlStorage", loc)
+        stl = dafPers.StorageList([storage])
+
+        persistable = pers.unsafeRetrieve("PersistableSdqaRatingVector", stl, dp)
+        res = SDQA.PersistableSdqaRatingVector.swigConvert(persistable)
+
+        print "Check (XmlStorage) ====\n"
+        assert(res == self.dsv1)
+
     def testPersistence(self):
         if dafPers.DbAuth.available("lsst10.ncsa.uiuc.edu", "3306"):
 
