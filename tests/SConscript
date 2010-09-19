@@ -13,10 +13,13 @@ env.Program(["testSdqaImageStatus.cc"], LIBS=env.getlibs(env["eups_product"]))
 #
 import lsst.tests
 
-tests = lsst.tests.Control(env, verbose = True)
+ignoreList=["testSdqaRatingFormatter.py"]
+tests = lsst.tests.Control(env, ignoreList=ignoreList, verbose=True)
+
 tests.run("*.cc")
 
 # This one seems a bit harder to make generic.
+
 for target in tests.run("*.py"):
      env.Depends(target,
         "../python/lsst/sdqa/_sdqaLib%s" % (env['LDMODULESUFFIX']))
