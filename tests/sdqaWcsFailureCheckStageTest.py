@@ -44,6 +44,7 @@ import lsst.sdqa as sdqa
 import lsst.sdqa.pipeline as sdqaPipe
 import lsst.afw.detection as afwDetect
 import lsst.daf.base as dafBase
+import math
 
 class SdqaWcsFailureCheckStageTestCase(unittest.TestCase):
     """A test case for SdqaWcsFailureCheckStage.py"""
@@ -54,8 +55,8 @@ class SdqaWcsFailureCheckStageTestCase(unittest.TestCase):
         for i in range(nobj):
             s = afwDetect.Source()
             s.setId(i)
-            s.setRa(10 + 0.001*i)
-            s.setDec(10 + 0.001*i)
+            s.setRa(math.radians(10 + 0.001*i))
+            s.setDec(math.radians(10 + 0.001*i))
             self.ss1.append(s)
 
     def tearDown(self):
