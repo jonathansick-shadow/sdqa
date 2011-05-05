@@ -61,17 +61,8 @@ namespace sdqa = lsst::sdqa;
  * Valid _ratingScope values are 0=Amp, 1=CCD, 2=FPA, and 3=FOOTPRINT.
  */
 
-sdqa::SdqaRating::SdqaRating() : _ratingScope(INVALID), _parentDbId(0) {}
-
-
-/**
- * Copy constructor for SdqaRating class.
- */
-
-sdqa::SdqaRating::SdqaRating(SdqaRating const & other) {
-    set(other._metricName, other._metricValue, other._metricErr, other._ratingScope);
-}
-
+sdqa::SdqaRating::SdqaRating() : _ratingScope(INVALID), _parentDbId(0),
+    _sdqa_metricId(0), _sdqa_thresholdId(0) {}
 
 /**
  *  Constructor for SdqaRating class to explicitly initialize class attributes.
@@ -84,8 +75,9 @@ sdqa::SdqaRating::SdqaRating(SdqaRating const & other) {
  *
  */
 
-sdqa::SdqaRating::SdqaRating(std::string metricName, double metricValue, 
-                             double metricErr, RatingScope ratingScope) {
+sdqa::SdqaRating::SdqaRating(std::string metricName, double metricValue,
+                             double metricErr, RatingScope ratingScope) :
+    _parentDbId(0), _sdqa_metricId(0), _sdqa_thresholdId(0) {
     set(metricName, metricValue, metricErr, ratingScope);
 }
 

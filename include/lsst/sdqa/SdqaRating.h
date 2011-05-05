@@ -83,8 +83,6 @@ public:
 
     SdqaRating();
 
-    SdqaRating(SdqaRating const & other);  
-
     SdqaRating(std::string metricName, double metricValue, 
 	       double metricErr, RatingScope ratingScope);
 
