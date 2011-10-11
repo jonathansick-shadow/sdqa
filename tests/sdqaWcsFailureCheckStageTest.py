@@ -43,6 +43,7 @@ from lsst.pex.harness.simpleStageTester import SimpleStageTester
 import lsst.sdqa as sdqa
 import lsst.sdqa.pipeline as sdqaPipe
 import lsst.afw.detection as afwDetect
+import lsst.afw.geom as afwGeom
 import lsst.daf.base as dafBase
 import math
 
@@ -55,8 +56,8 @@ class SdqaWcsFailureCheckStageTestCase(unittest.TestCase):
         for i in range(nobj):
             s = afwDetect.Source()
             s.setId(i)
-            s.setRa(math.radians(10 + 0.001*i))
-            s.setDec(math.radians(10 + 0.001*i))
+            s.setRa((10 + 0.001*i) * afwGeom.degrees)
+            s.setDec((10 + 0.001*i) * afwGeom.degrees)
             self.ss1.append(s)
 
     def tearDown(self):
