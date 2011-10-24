@@ -1,27 +1,3 @@
 # -*- python -*-
-Import("env")
-import glob
-
-env.Program(["testSdqaMetric.cc"], LIBS=env.getlibs(env["eups_product"]))
-env.Program(["testSdqaThreshold.cc"], LIBS=env.getlibs(env["eups_product"]))
-env.Program(["testSdqaRating.cc"], LIBS=env.getlibs(env["eups_product"]))
-env.Program(["testSdqaRatingSet.cc"], LIBS=env.getlibs(env["eups_product"]))
-env.Program(["testSdqaImageStatus.cc"], LIBS=env.getlibs(env["eups_product"]))
-
-#
-# Tests
-#
-import lsst.tests
-
-ignoreList=["testSdqaRatingFormatter.py"]
-tests = lsst.tests.Control(env, ignoreList=ignoreList, verbose=True)
-
-tests.run("*.cc")
-
-# This one seems a bit harder to make generic.
-
-for target in tests.run("*.py"):
-     env.Depends(target,
-        "../python/lsst/sdqa/_sdqaLib%s" % (env['LDMODULESUFFIX']))
-
-
+from lsst.sconsUtils import scripts
+scripts.BasicSConscript.tests()
