@@ -1,9 +1,0 @@
-#<?cfg paf dictionary ?>
-#
-
-Formatter: {
-    PersistableSdqaRatingVector: {
-        sdqaLookupDatabase: "mysql://lsst10.ncsa.uiuc.edu:3306/russ"
-    }
-}
-
