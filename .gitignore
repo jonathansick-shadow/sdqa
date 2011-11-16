@@ -1,0 +1,15 @@
+
+# /
+/.scon*
+/config.log
+
+# /doc/
+/doc/htmlDir
+
+# /python/lsst/sdqa/
+/python/lsst/sdqa/*Lib.py
+/python/lsst/sdqa/*Lib_wrap.cc
+
+# /tests/
+/tests/.tests
+/tests/Sdqa*_1
