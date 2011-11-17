@@ -3,6 +3,8 @@
 Doubtless incomplete, but probably enough to tide us over until we finish getting rid of sdqa
 """
 
+from .version import *
+
 class SdqaRating(object):
     INVALID = -1
     AMP = 0
