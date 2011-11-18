@@ -1,15 +1,16 @@
-
-# /
-/.scon*
-/config.log
-
-# /doc/
-/doc/htmlDir
-
-# /python/lsst/sdqa/
-/python/lsst/sdqa/*Lib.py
-/python/lsst/sdqa/*Lib_wrap.cc
-
-# /tests/
-/tests/.tests
-/tests/Sdqa*_1
+.sconsign.dblite
+config.log
+.sconf_temp
+*.o
+*.os
+*.so
+*.cfgc
+*.pyc
+*_wrap.cc
+*Lib.py
+doc/html
+doc/*.tag
+doc/*.inc
+doc/doxygen.conf
+tests/.tests
+version.py

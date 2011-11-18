@@ -1,13 +1,3 @@
-setupRequired(daf_persistence >= 3.3.4)
-setupRequired(security >= 3.2.2)
-setupRequired(daf_base >= 3.2.3)
-setupRequired(utils >= 3.4.3)
-setupRequired(pex_exceptions >= 3.2.2)
-
-setupOptional(pex_harness >= 3.5)
-setupOptional(afw >= 3.5.1)
-
-envAppend(LD_LIBRARY_PATH, ${PRODUCT_DIR}/lib)
-envAppend(DYLD_LIBRARY_PATH, ${PRODUCT_DIR}/lib)
+setupRequired(base >= 4.6.0.0)
 
 envAppend(PYTHONPATH, ${PRODUCT_DIR}/python)
