@@ -5,6 +5,7 @@ Doubtless incomplete, but probably enough to tide us over until we finish gettin
 
 from .version import *
 
+
 class SdqaRating(object):
     INVALID = -1
     AMP = 0
@@ -30,7 +31,9 @@ class SdqaRating(object):
     def getValue(self):
         return self.value
 
+
 class SdqaRatingSet(object):
+
     def __init__(self):
         self.ratings = []
 
